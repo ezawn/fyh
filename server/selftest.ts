@@ -268,9 +268,10 @@ function stepFake(broken: string[] = []) {
     seen.set(step, n + 1);
     const bad = n === 0 && broken.includes(step);
     if (step === "overview") return { outcome: "cartridge", source: b.source, notes: b.notes, character: charCore };
-    if (step === "world") {
-      const { enemies, boss, rooms: _rooms, ...world } = b.world;
-      return { world, enemies: enemies.map(strip), boss: strip(boss) };
+    if (step === "fighters") return { enemies: b.world.enemies.map(strip), boss: strip(b.world.boss) };
+    if (step === "look") {
+      const { enemies: _e, boss: _b, rooms: _rooms, dialogue: _d, ...world } = b.world;
+      return { world };
     }
     if (step === "abilities") return { abilities };
     if (step.startsWith("rig for")) return { rig: bad ? { ...charRig, parts: { ...charRig.parts, head: [{ type: "circle", x: 0, y: 0, r: 50, color: "#ffffff" }] } } : charRig };
@@ -286,9 +287,9 @@ await test("stepwise: steps stitched into a valid, saved cartridge", async () =>
   const events: GenerateEvent[] = [];
   const result = await runGenerate({ title: "Nosferatu (1922)", character: "Count Orlok" }, { store, complete: ai.fn, emit: (e) => events.push(e), stepwise: true });
   assert.equal(result.status, "ready", JSON.stringify(result).slice(0, 400));
-  assert.deepEqual(ai.log, ["overview", "world", "abilities", "rig for Count Orlok", "rig for Plague Rat", "rig for Vampire Hunter", "rooms"]);
+  assert.deepEqual(ai.log, ["overview", "fighters", "look", "abilities", "rooms", "rig for Count Orlok", "rig for Plague Rat", "rig for Vampire Hunter"]);
   const details = events.flatMap((e) => (e.type === "stage" && e.stage === "interpreting" && e.detail ? [e.detail] : []));
-  assert.ok(details.some((d) => d.startsWith("Step 4: rig for")), "each step is streamed as a real stage");
+  assert.ok(details.some((d) => d.startsWith("Drawing ")), "each step is streamed as a real stage");
   assert.equal((await store.listReady()).length, 1);
 });
 
@@ -301,7 +302,7 @@ await test("stepwise: repair re-runs only the broken step", async () => {
   })();
   assert.equal(result.status, "ready", JSON.stringify(result).slice(0, 400));
   assert.ok(stages.includes("repairing"));
-  assert.deepEqual(ai.log.slice(7), ["rig for Count Orlok"], "only the character rig step ran again");
+  assert.deepEqual(ai.log.slice(8), ["rig for Count Orlok"], "only the character rig step ran again");
 });
 
 await test("stepwise: independent steps run at the same time", async () => {
@@ -319,12 +320,12 @@ await test("stepwise: independent steps run at the same time", async () => {
   assert.equal(most, 4, "the 3 rigs and the rooms run together");
 });
 
-await test("stepwise: honest outcome from step 1 stops early", async () => {
-  const ai = fake({ outcome: "unknown_source", message: "I don't know this film." });
+await test("stepwise: honest outcome from step 1 wins, even if a parallel step failed", async () => {
+  const ai = fake({ outcome: "unknown_source", message: "I don't know this film." }, new Error("busy"));
   const events: GenerateEvent[] = [];
   const result = await runGenerate({ title: "Some Lost Film", character: "Nobody" }, { store: new MemoryStore([]), complete: ai, emit: (e) => events.push(e), stepwise: true });
   assert.equal(result.status, "unknown_source");
-  assert.equal(ai.calls, 1);
+  assert.equal(ai.calls, 4, "round 1 only: no rigs or rooms");
 });
 
 await test("stepwise: problems map to their steps", async () => {
@@ -334,7 +335,8 @@ await test("stepwise: problems map to their steps", async () => {
   assert.equal(stepFor("world.boss.rig.parts.torso: Invalid input"), "rig:boss");
   assert.equal(stepFor("character.abilities.2: flight needs duration > 0"), "abilities");
   assert.equal(stepFor("world.rooms.0: needs exactly one spawn"), "rooms");
-  assert.equal(stepFor("world.enemies.0 (Plague Rat): missing powerTier"), "world");
+  assert.equal(stepFor("world.enemies.0 (Plague Rat): missing powerTier"), "fighters");
+  assert.equal(stepFor("world.visualStyle.palette.sky: Invalid input"), "look");
   assert.equal(stepFor("character: missing powerTier"), "overview");
 });
 
