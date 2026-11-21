@@ -1,42 +1,81 @@
 /**
  * SERVER + UI LANE owns src/main.ts and src/ui/.
- * STUB: pick the first character and world from the API and start the engine.
+ * App shell: header nav, offline banner, hash-routed screens.
  */
-import { startGame, type GameHandle } from "./engine";
-import type { CharacterSummary, SessionResponse, WorldSummary } from "./shared/api";
+import "./ui/style.css";
+import { append, h } from "./ui/dom";
+import { currentRoute, navigate, startRouter, type Route } from "./ui/router";
+import { charactersScreen } from "./ui/screens/characters";
+import { generateScreen } from "./ui/screens/generate";
+import { playScreen } from "./ui/screens/play";
+import { titleScreen } from "./ui/screens/title";
+import { worldsScreen } from "./ui/screens/worlds";
+import { ensureLibrary, onLibraryChange, state } from "./ui/state";
 
 const app = document.getElementById("app")!;
-let game: GameHandle | null = null;
 
-async function showSelect() {
-  game?.destroy();
-  game = null;
-  app.innerHTML = "<h1>AI Retro Remix</h1><p>Loading…</p>";
-  const [characters, worlds]: [CharacterSummary[], WorldSummary[]] = await Promise.all([
-    fetch("/api/characters").then((r) => r.json()),
-    fetch("/api/worlds").then((r) => r.json()),
-  ]);
-  app.innerHTML = "<h1>AI Retro Remix</h1><p>UI STUB: choose a character, then a world.</p>";
-  for (const c of characters) {
-    for (const w of worlds) {
-      const btn = document.createElement("button");
-      btn.textContent = `${c.name} in ${w.name}`;
-      btn.style.cssText = "display:block;margin:6px 0;padding:6px;";
-      btn.onclick = () => play(c.id, w.id);
-      app.appendChild(btn);
-    }
+const NAV: [Route, string][] = [
+  ["title", "Library"],
+  ["characters", "Characters"],
+  ["worlds", "Worlds"],
+  ["generate", "+ New"],
+];
+
+const navButtons = NAV.map(([route, label]) => {
+  const b = h("button", { class: "nav-btn", "data-route": route, onclick: () => navigate(route) }, label);
+  return b;
+});
+
+const banner = h("div", { class: "banner", role: "status", hidden: true });
+const main = h("main", { id: "screen" });
+
+app.replaceChildren(
+  h(
+    "header",
+    { class: "top" },
+    h("button", { class: "brand", onclick: () => navigate("title") }, "RETRO REMIX"),
+    h("nav", null, navButtons),
+  ),
+  banner,
+  main,
+);
+
+function updateBanner() {
+  const lib = state.library;
+  if (lib?.offline) {
+    banner.hidden = false;
+    banner.replaceChildren();
+    append(banner, [
+      h("span", null, "Offline: showing stub data (server not reachable)"),
+      lib.offlineReason ? h("span", { class: "tiny" }, ` (${lib.offlineReason})`) : null,
+      h(
+        "button",
+        {
+          class: "btn small-btn",
+          onclick: () => {
+            ensureLibrary(true)
+              .catch(() => {})
+              .then(() => navigate(currentRoute()));
+          },
+        },
+        "Retry",
+      ),
+    ]);
+  } else {
+    banner.hidden = true;
+    banner.replaceChildren();
   }
 }
 
-async function play(characterId: string, worldId: string) {
-  const res = await fetch("/api/session", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ characterId, worldId }),
-  });
-  const session: SessionResponse = await res.json();
-  app.innerHTML = "";
-  game = startGame(app, session, () => showSelect());
-}
+onLibraryChange(updateBanner);
 
-showSelect();
+startRouter(main, {
+  title: titleScreen,
+  characters: charactersScreen,
+  worlds: worldsScreen,
+  generate: generateScreen,
+  play: playScreen,
+}, (route) => {
+  document.body.dataset.route = route;
+  for (const b of navButtons) b.classList.toggle("active", b.dataset.route === route);
+});
