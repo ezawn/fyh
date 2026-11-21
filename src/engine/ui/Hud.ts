@@ -17,6 +17,7 @@ const SLOT_W = 60;
 const SLOT_H = 16;
 const SLOT_Y = HUD_H - 30;
 const MUTE = { x: HUD_W - 34, y: SLOT_Y, w: 32, h: SLOT_H };
+const FULL = { x: MUTE.x - 36, y: SLOT_Y, w: 34, h: SLOT_H };
 const CONTROLS = "WASD move · Space jump · Mouse aim · Click attack · 1–4 abilities · Esc quit";
 
 export class Hud {
@@ -25,6 +26,7 @@ export class Hud {
   private readonly slotTexts: Phaser.GameObjects.Text[] = [];
   private readonly slotRight: Phaser.GameObjects.Text[] = [];
   private readonly muteText: Phaser.GameObjects.Text;
+  private readonly fullText: Phaser.GameObjects.Text;
   private toast: Phaser.GameObjects.Text | null = null;
   private readonly rightPanelW: number;
   private toastUntil = 0;
@@ -72,12 +74,18 @@ export class Hud {
       this.slotRight.push(uiText(hud, x + SLOT_W - 2, SLOT_Y + 3, "", "#ffb0b0").setOrigin(1, 0));
     }
     this.muteText = uiText(hud, MUTE.x + MUTE.w / 2, MUTE.y + 3, "", "#ffffff").setOrigin(0.5, 0);
+    this.fullText = uiText(hud, FULL.x + FULL.w / 2, FULL.y + 3, "", "#ffffff").setOrigin(0.5, 0);
     uiText(hud, HUD_W / 2, HUD_H - 11, CONTROLS, "#a0a0b0").setOrigin(0.5, 0);
   }
 
   /** True if the HUD point is on the mute button. */
   hitMute(x: number, y: number): boolean {
     return x >= MUTE.x && x <= MUTE.x + MUTE.w && y >= MUTE.y && y <= MUTE.y + MUTE.h;
+  }
+
+  /** True if the HUD point is on the fullscreen button. */
+  hitFullscreen(x: number, y: number): boolean {
+    return x >= FULL.x && x <= FULL.x + FULL.w && y >= FULL.y && y <= FULL.y + FULL.h;
   }
 
   /** Short message above the ability bar (e.g. "Not supported"). */
@@ -137,6 +145,12 @@ export class Hud {
     g.fillStyle(0x1a1a2e, 0.9).fillRect(MUTE.x, MUTE.y, MUTE.w, MUTE.h);
     g.lineStyle(1, 0x606080, 1).strokeRect(MUTE.x + 0.5, MUTE.y + 0.5, MUTE.w - 1, MUTE.h - 1);
     this.muteText.setText(muted ? "M:off" : "M:on").setColor(muted ? "#ff8080" : "#80ff80");
+
+    // Fullscreen button
+    const full = this.hud.scene.scale.isFullscreen;
+    g.fillStyle(0x1a1a2e, 0.9).fillRect(FULL.x, FULL.y, FULL.w, FULL.h);
+    g.lineStyle(1, 0x606080, 1).strokeRect(FULL.x + 0.5, FULL.y + 0.5, FULL.w - 1, FULL.h - 1);
+    this.fullText.setText(full ? "F:exit" : "F:full").setColor("#c8d8ff");
 
     // Controls line background
     g.fillStyle(0x000000, 0.45).fillRect(0, HUD_H - 12, HUD_W, 12);
