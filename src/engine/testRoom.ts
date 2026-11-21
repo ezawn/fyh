@@ -12,7 +12,7 @@ const room1 = [
   "............................................................",
   "......................=====..............=====..............",
   "...................................C........................",
-  ".S..........1...........................2..............E....",
+  ".S..a.......1...........................2..............E....",
   "####...######.....######......####^^^^######......######....",
   "####...######.....######......##############......##########",
   "####^^^######^^^^^######^^^^^^##############^^^^^^##########",
@@ -36,18 +36,19 @@ const bossRoom = [
   "########################################",
 ];
 
+// v1.1: human rig canvas is 32×64 rig px (drawn at RIG_SCALE 0.5).
 const rig = (body: string, head: string): Rig => ({
   sizeClass: "human",
   parts: {
-    head: [{ type: "circle", x: 8, y: 5, r: 4, color: head }],
-    torso: [{ type: "rect", x: 5, y: 10, w: 6, h: 10, color: body }],
-    armFront: [{ type: "rect", x: 10, y: 11, w: 2, h: 8, color: head }],
-    armBack: [{ type: "rect", x: 4, y: 11, w: 2, h: 8, color: head }],
-    legFront: [{ type: "rect", x: 8, y: 20, w: 3, h: 12, color: "#202060" }],
-    legBack: [{ type: "rect", x: 5, y: 20, w: 3, h: 12, color: "#202060" }],
+    head: [{ type: "circle", x: 16, y: 10, r: 8, color: head }],
+    torso: [{ type: "rect", x: 10, y: 20, w: 12, h: 20, color: body }],
+    armFront: [{ type: "rect", x: 20, y: 22, w: 4, h: 16, color: head }],
+    armBack: [{ type: "rect", x: 8, y: 22, w: 4, h: 16, color: head }],
+    legFront: [{ type: "rect", x: 16, y: 40, w: 6, h: 24, color: "#202060" }],
+    legBack: [{ type: "rect", x: 10, y: 40, w: 6, h: 24, color: "#202060" }],
     extras: [],
   },
-  pivots: { neck: [8, 9], shoulder: [8, 11], hip: [8, 20] },
+  pivots: { neck: [16, 18], shoulder: [16, 22], hip: [16, 40] },
 });
 
 const ab = (slot: 1 | 2 | 3 | 4, mechanic: Ability["mechanic"], extra: Partial<Ability> = {}): Ability => ({
@@ -103,6 +104,15 @@ export const TEST_SESSION: Session = {
       palette: { sky: "#5c94fc", skyBottom: "#a4c8ff", ground: "#8b5a2b", groundTop: "#3fa34d", platform: "#c08040", accent: "#ffd23f" },
       backdrop: "hills",
     },
+    npcs: [{ id: "test-npc", name: "Signpost Sam", rig: rig("#30a030", "#f0d0a0"), lines: [{ speaker: "Signpost Sam", text: "Hi! I'm a test NPC. The exit is to the right." }] }],
+    props: [
+      { id: "test-tree", name: "Tree", size: { w: 48, h: 80 }, layer: "back", shapes: [
+        { type: "rect", x: 20, y: 40, w: 8, h: 40, color: "#6b4226" },
+        { type: "circle", x: 24, y: 28, r: 22, color: "#2e8b3a" },
+        { type: "circle", x: 16, y: 20, r: 8, color: "#45a84f" } ] },
+      { id: "test-bush", name: "Bush", size: { w: 32, h: 16 }, layer: "front", shapes: [
+        { type: "circle", x: 9, y: 9, r: 7, color: "#3a9a44" }, { type: "circle", x: 22, y: 8, r: 8, color: "#2e8b3a" } ] },
+    ],
     enemies: [
       { id: "test-walker", name: "Walker", rig: rig("#c03030", "#e0a0a0"), collisionBox: { w: 10, h: 28 }, stats: stats(15, 2), tags: [], behaviour: "walker", speed: 40, attack: enemyAttack },
       { id: "test-flyer", name: "Flyer", rig: rig("#3030c0", "#a0a0e0"), collisionBox: { w: 10, h: 28 }, stats: stats(15, 2), tags: [], behaviour: "flyer", speed: 50, attack: enemyAttack },
@@ -112,7 +122,7 @@ export const TEST_SESSION: Session = {
       behaviour: "walker", speed: 60, attack: enemyAttack, pattern: ["charge", "jump", "shoot"], phaseAt: 0.5,
     },
     rooms: [
-      { id: "room-1", name: "Test Room", objective: "Reach the exit", layout: room1, isBossRoom: false, exit: { toRoom: "room-2" } },
+      { id: "room-1", name: "Test Room", objective: "Reach the exit", layout: room1, isBossRoom: false, exit: { toRoom: "room-2" }, props: [{ prop: "test-tree", col: 8, row: 9 }, { prop: "test-bush", col: 19, row: 9 }] },
       { id: "room-2", name: "Test Room 2", objective: "Reach the exit", layout: room1, isBossRoom: false, exit: { toRoom: "room-3" } },
       { id: "room-3", name: "Boss Arena", objective: "Defeat the Test Boss", layout: bossRoom, isBossRoom: true, exit: { toRoom: "END" } },
     ],

@@ -100,6 +100,14 @@ export interface EngineContext {
   /** Remove an entity's body and visuals (after its death animation if `animate`). */
   despawnEntity(e: RuntimeEntity, animate: boolean): void;
 
+  /**
+   * Screen-space HUD layer (v1.1: the world camera is zoomed ×3, so never use
+   * setScrollFactor(0) on the world camera for UI). Objects added here are drawn
+   * by a separate HUD camera in a 400×224 logical coordinate space (top-left 0,0),
+   * and ignored by the world camera. Use for the boss health bar.
+   */
+  addToHud(obj: Phaser.GameObjects.GameObject): void;
+
   /** Bottom dialogue box; gameplay pauses until all lines are dismissed. */
   showDialogue(lines: DialogueLine[]): Promise<void>;
   readonly paused: boolean;
