@@ -8,7 +8,7 @@ import type { ZodError } from "zod";
 import { toCharacterSummary, toWorldSummary, type ApiError, type GenerateEvent } from "../src/shared/api";
 import { GenerateRequestBody, runGenerate } from "./generate";
 import { HttpError, SessionRequestBody, runSession } from "./session";
-import { aiComplete, aiProvider } from "./ai";
+import { AI_OFF_MESSAGE, aiComplete, aiProvider } from "./ai";
 import { createStore } from "./store";
 
 const store = await createStore();
@@ -72,6 +72,10 @@ app.post(
       if (!closed) res.write(JSON.stringify(event) + "\n");
     };
     // Generation keeps going if the client disconnects, so a finished cartridge still lands in the library.
+    if (aiProvider() === "none") {
+      emit({ type: "result", result: { status: "failed", message: AI_OFF_MESSAGE } });
+      return res.end();
+    }
     const result = await runGenerate(body.data, { store, complete: aiComplete, emit });
     console.log(`[generate] "${body.data.title}" / "${body.data.character}" -> ${result.status}${result.status === "ready" ? ` (${result.cartridge.id})` : ""}`);
     res.end();
