@@ -1,28 +1,21 @@
 /**
  * ENGINE LANE owns src/engine/.
- * Public API the UI calls. Keep this signature stable; everything else in
- * this folder is yours to change.
- */
-import type { Cartridge } from "../shared/cartridge";
-
-export type GameResult = { outcome: "won" | "died" | "quit"; collectibles: number };
-
-export type GameHandle = { destroy(): void };
-
-/**
- * Mount a playable game for `cart` inside `parent`. Call `onExit` when the
- * player wins, dies (and chooses to stop) or presses Esc.
+ * Public API the UI calls. Keep this signature stable (docs/LANES.md).
  *
  * STUB: replace with the real Phaser game.
  */
-export function startGame(parent: HTMLElement, cart: Cartridge, onExit: (r: GameResult) => void): GameHandle {
+import type { SessionResponse } from "../shared/api";
+
+export type GameResult = { outcome: "won" | "died" | "quit" };
+export type GameHandle = { destroy(): void };
+
+export function startGame(parent: HTMLElement, session: SessionResponse, onExit: (r: GameResult) => void): GameHandle {
   const box = document.createElement("div");
   box.style.cssText = "padding:24px;font-family:monospace;color:#fff;background:#000;";
-  box.innerHTML = `<p>ENGINE STUB: would play <b>${cart.title}</b> as ${cart.character.name} in ${cart.world.name}
-    (${cart.world.levels.length} levels). Press Esc to exit.</p>`;
+  box.textContent = `ENGINE STUB: ${session.character.name} in ${session.world.name}. Press Esc to exit.`;
   parent.appendChild(box);
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === "Escape") onExit({ outcome: "quit", collectibles: 0 });
+    if (e.key === "Escape") onExit({ outcome: "quit" });
   };
   window.addEventListener("keydown", onKey);
   return {

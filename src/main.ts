@@ -1,35 +1,42 @@
 /**
- * UI LANE owns src/main.ts and src/ui/.
- * STUB: lists the library and plays a cartridge with the engine. Replace with
- * the real library / generate / remix screens.
+ * SERVER + UI LANE owns src/main.ts and src/ui/.
+ * STUB: pick the first character and world from the API and start the engine.
  */
 import { startGame, type GameHandle } from "./engine";
-import type { Cartridge } from "./shared/cartridge";
-import type { CartridgeSummary } from "./shared/api";
+import type { CharacterSummary, SessionResponse, WorldSummary } from "./shared/api";
 
 const app = document.getElementById("app")!;
 let game: GameHandle | null = null;
 
-async function showLibrary() {
+async function showSelect() {
   game?.destroy();
   game = null;
-  app.innerHTML = "<h1>Retro Cartridges</h1><p>Loading…</p>";
-  const res = await fetch("/api/cartridges");
-  const list: CartridgeSummary[] = await res.json();
-  app.innerHTML = "<h1>Retro Cartridges</h1>";
-  for (const c of list) {
-    const btn = document.createElement("button");
-    btn.textContent = `${c.title} (${c.characterName} in ${c.worldName})`;
-    btn.style.cssText = `display:block;margin:8px 0;background:${c.coverColor};color:#fff;padding:8px;`;
-    btn.onclick = () => play(c.id);
-    app.appendChild(btn);
+  app.innerHTML = "<h1>AI Retro Remix</h1><p>Loading…</p>";
+  const [characters, worlds]: [CharacterSummary[], WorldSummary[]] = await Promise.all([
+    fetch("/api/characters").then((r) => r.json()),
+    fetch("/api/worlds").then((r) => r.json()),
+  ]);
+  app.innerHTML = "<h1>AI Retro Remix</h1><p>UI STUB: choose a character, then a world.</p>";
+  for (const c of characters) {
+    for (const w of worlds) {
+      const btn = document.createElement("button");
+      btn.textContent = `${c.name} in ${w.name}`;
+      btn.style.cssText = "display:block;margin:6px 0;padding:6px;";
+      btn.onclick = () => play(c.id, w.id);
+      app.appendChild(btn);
+    }
   }
 }
 
-async function play(id: string) {
-  const cart: Cartridge = await (await fetch(`/api/cartridges/${id}`)).json();
+async function play(characterId: string, worldId: string) {
+  const res = await fetch("/api/session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ characterId, worldId }),
+  });
+  const session: SessionResponse = await res.json();
   app.innerHTML = "";
-  game = startGame(app, cart, () => showLibrary());
+  game = startGame(app, session, () => showSelect());
 }
 
-showLibrary();
+showSelect();
