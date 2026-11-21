@@ -5,22 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Engine Dev</title>
     <style>
-      html, body { margin: 0; height: 100%; background: #111; color: #ccc; font-family: monospace; }
-      #game { width: 100vw; height: calc(100vh - 20px); }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #111; color: #ccc; font-family: monospace; }
+      #bar { height: 24px; display: flex; gap: 8px; align-items: center; padding: 0 8px; }
+      #game { width: 100%; height: calc(100% - 24px); overflow: hidden; }
     </style>
   </head>
   <body>
-    <div id="status">engine dev page: test room</div>
+    <div id="bar">
+      character <select id="char"></select>
+      world <select id="world"></select>
+      <button id="go">play</button>
+      <span id="status"></span>
+    </div>
     <div id="game"></div>
     <script type="module">
+      // Engine dev page. ?char=<cartridge file>&world=<cartridge file>, or "test".
       import { startGame } from "./index.ts";
       import { TEST_SESSION } from "./testRoom.ts";
-      const parent = document.getElementById("game");
-      const status = document.getElementById("status");
+      const CARTS = ["test", "dragon-ball-ep1-goku", "peppa-muddy-puddles", "jjk-gojo"];
+      const q = new URLSearchParams(location.search);
+      const $ = (id) => document.getElementById(id);
+      for (const sel of [$("char"), $("world")]) for (const c of CARTS) sel.add(new Option(c, c));
+      $("char").value = q.get("char") ?? "test";
+      $("world").value = q.get("world") ?? "test";
+      $("go").onclick = () => { location.search = `?char=${$("char").value}&world=${$("world").value}`; };
+
+      const load = async (name) => {
+        if (name === "test") return { character: TEST_SESSION.character, world: TEST_SESSION.world };
+        return (await fetch(`/content/${name}.json`)).json();
+      };
+      const [c, w] = await Promise.all([load($("char").value), load($("world").value)]);
+      const session = { character: c.character, world: w.world, dialogue: w.world.dialogue, dialogueSource: "original" };
       let handle;
       const run = () => {
-        handle = startGame(parent, TEST_SESSION, (r) => {
-          status.textContent = "onExit: " + JSON.stringify(r) + " (restarting in 1s)";
+        handle = startGame($("game"), session, (r) => {
+          $("status").textContent = "onExit: " + JSON.stringify(r) + " (restarting in 1s)";
           setTimeout(() => { handle.destroy(); run(); }, 1000);
         });
       };
