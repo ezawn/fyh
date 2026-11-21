@@ -76,7 +76,7 @@ app.post(
       emit({ type: "result", result: { status: "failed", message: AI_OFF_MESSAGE } });
       return res.end();
     }
-    const result = await runGenerate(body.data, { store, complete: aiComplete, emit });
+    const result = await runGenerate(body.data, { store, complete: aiComplete, emit, stepwise: aiProvider() === "gemini" || process.env.GENERATE_STEPWISE === "1" });
     console.log(`[generate] "${body.data.title}" / "${body.data.character}" -> ${result.status}${result.status === "ready" ? ` (${result.cartridge.id})` : ""}`);
     res.end();
   }),

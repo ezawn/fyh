@@ -8,6 +8,7 @@ import { SCHEMA_VERSION, generationJsonSchema, type Cartridge } from "../src/sha
 import { autoFix, validateCartridge } from "../src/shared/validate";
 import { generationPrompt, loadExample, repairPrompt } from "./prompts";
 import type { CompleteFn } from "./snowflake";
+import { generateInSteps, repairInSteps, type Pieces, type StepContext } from "./steps";
 import { IdTakenError, type Store } from "./store";
 
 export const GenerateRequestBody = z.object({
@@ -20,6 +21,8 @@ export type GenerateDeps = {
   complete: CompleteFn;
   emit: (event: GenerateEvent) => void;
   now?: () => Date;
+  /** Build the cartridge in several small AI calls (for backends that can't take the whole schema). */
+  stepwise?: boolean;
 };
 
 const MAX_TOKENS = 32000;
@@ -130,11 +133,19 @@ export async function runGenerate(input: { title: string; character: string }, d
   const schema = generationJsonSchema();
 
   try {
-    // 1. interpreting: the Cortex call
+    // 1. interpreting: one AI call, or one per step
     stage("interpreting", `Asking the AI about "${input.title}" / "${input.character}"`);
+    const steps: StepContext = { ...input, complete, onStep: (detail) => stage("interpreting", detail) };
+    let pieces: Pieces | undefined;
     let raw: unknown;
     try {
-      raw = await complete(generationPrompt(input.title, input.character, loadExample()), schema, { maxTokens: MAX_TOKENS, effort: "high" });
+      if (deps.stepwise) {
+        const out = await generateInSteps(steps);
+        pieces = out.pieces;
+        raw = out;
+      } else {
+        raw = await complete(generationPrompt(input.title, input.character, loadExample()), schema, { maxTokens: MAX_TOKENS, effort: "high" });
+      }
     } catch (err) {
       return finish({ status: "failed", message: `AI generation failed: ${errMsg(err)}` });
     }
@@ -152,7 +163,13 @@ export async function runGenerate(input: { title: string; character: string }, d
       stage("repairing", `${problems.length} problem(s) after auto-fix`);
       let repaired: unknown;
       try {
-        repaired = await complete(repairPrompt(input.title, input.character, body(cart), problems), schema, { maxTokens: MAX_TOKENS, effort: "high" });
+        if (pieces) {
+          // Re-run only the steps whose part failed, each with its own problems.
+          const fixed = await repairInSteps({ ...steps, onStep: (detail) => stage("repairing", detail) }, pieces, problems);
+          repaired = { outcome: "cartridge", cartridge: fixed.cartridge };
+        } else {
+          repaired = await complete(repairPrompt(input.title, input.character, body(cart), problems), schema, { maxTokens: MAX_TOKENS, effort: "high" });
+        }
       } catch (err) {
         return finish({ status: "failed", message: `AI repair call failed: ${errMsg(err)}`, problems: problems.slice(0, MAX_PROBLEMS_SHOWN) });
       }
