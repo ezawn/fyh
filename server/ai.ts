@@ -2,19 +2,23 @@
  * SERVER LANE. Picks the AI backend for generation and remix lines.
  * Snowflake trial accounts can't call Cortex AI_COMPLETE, so the default is the
  * Anthropic API when ANTHROPIC_API_KEY is set; the library stays in Snowflake.
- * Set AI_PROVIDER=cortex to go back to Cortex on a paid account.
+ * Set AI_PROVIDER=cortex to go back to Cortex on a paid account. With neither,
+ * AI is off: generation says so honestly and sessions use the original dialogue.
  */
 import "dotenv/config";
 import Anthropic from "@anthropic-ai/sdk";
 import { cortexSafeSchema } from "./cortex-schema";
 import { cortexComplete, type CompleteFn, type CompleteOptions } from "./snowflake";
 
-export type AiProvider = "anthropic" | "cortex";
+export type AiProvider = "anthropic" | "cortex" | "none";
+
+export const AI_OFF_MESSAGE =
+  "Live generation is off: no AI backend is configured (Snowflake trial accounts can't use Cortex AI, and no Anthropic key is set). The shared library still works.";
 
 export function aiProvider(): AiProvider {
   const p = process.env.AI_PROVIDER;
   if (p === "anthropic" || p === "cortex") return p;
-  return process.env.ANTHROPIC_API_KEY ? "anthropic" : "cortex";
+  return process.env.ANTHROPIC_API_KEY ? "anthropic" : "none";
 }
 
 /** Structured outputs want every object closed; Cortex-safe stripping already drops unsupported keywords. */
@@ -65,5 +69,9 @@ export async function anthropicComplete<T = unknown>(prompt: string, jsonSchema:
   }
 }
 
-export const aiComplete: CompleteFn = (prompt, jsonSchema, opts) =>
-  aiProvider() === "anthropic" ? anthropicComplete(prompt, jsonSchema, opts) : cortexComplete(prompt, jsonSchema, opts);
+export const aiComplete: CompleteFn = (prompt, jsonSchema, opts) => {
+  const provider = aiProvider();
+  if (provider === "anthropic") return anthropicComplete(prompt, jsonSchema, opts);
+  if (provider === "cortex") return cortexComplete(prompt, jsonSchema, opts);
+  return Promise.reject(new Error(AI_OFF_MESSAGE));
+};
