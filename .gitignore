@@ -7,5 +7,12 @@ out/
 .DS_Store
 Thumbs.db
 
+# Node / build
+node_modules/
+dist/
+
+# Secrets (copy .env.example to .env)
+.env
+
 # Claude Code local settings
 .claude/settings.local.json

@@ -39,9 +39,18 @@ Note: on Windows PowerShell 5.1, `&&` doesn't work, so run the commands one at a
 
 Add yourself here when you start. Don't edit folders owned by someone else.
 
-| Person | Branch | Folders |
-|--------|--------|---------|
-| Sunlighttiger43 | `sunlighttiger43/main-work` | whole repo for now (until areas are assigned) |
+| Lane | Person | Branch | Folders |
+|------|--------|--------|---------|
+| Engine | _(claim it)_ | `<name>/engine` | `src/engine/` |
+| AI | _(claim it)_ | `<name>/ai` | `server/`, `cartridges/` |
+| UI | _(claim it)_ | `<name>/ui` | `src/main.ts`, `src/ui/`, `index.html`, `public/` |
+| Shared | everyone, after telling the team | — | `src/shared/`, `package.json`, `docs/`, `CLAUDE.md` |
+
+Full lane instructions and prompts: `docs/LANES.md`.
 
 ## Project
-- (Describe the project, stack, and how to run it here.)
+- **Retro Cartridges:** paste a story's synopsis and the AI turns it into a playable NES-style platformer "cartridge". Characters and worlds are independent, so any character can be remixed into any world, with the AI rebalancing the game for the power gap.
+- **Demo with public-domain stories only** (Dracula, Sherlock Holmes, Frankenstein…). No copyrighted characters in the repo or the demo.
+- **Stack:** TypeScript everywhere. Vite + Phaser 3 web app (`src/`), Express API (`server/`) calling the Anthropic SDK (`claude-opus-5-5`), cartridges stored as JSON files in `cartridges/`.
+- **The contract:** `src/shared/cartridge.ts` (zod schema + `checkCartridge`) and `src/shared/api.ts`. Summary in `docs/INTERFACES.md`.
+- **Run:** `npm install`, copy `.env.example` to `.env` (AI lane adds `ANTHROPIC_API_KEY`), then `npm run dev` (web http://localhost:5173, API :3001). Check with `npm run typecheck` and `npm run check:carts`.
