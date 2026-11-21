@@ -1,6 +1,7 @@
 /**
  * SERVER LANE. POST /api/session (SPEC 5.6, 7): fresh copies of a character and a world,
- * plus crossover flavour dialogue (cached in REMIX_LINES, else one Cortex call, else the originals).
+ * plus crossover flavour dialogue: cached in REMIX_LINES, else the originals at once while one AI
+ * call writes the remix in the background for the next session. Sessions never wait on the AI.
  */
 import { z } from "zod";
 import type { SessionResponse } from "../src/shared/api";
@@ -30,7 +31,8 @@ export class HttpError extends Error {
 
 export type SessionDeps = { store: Store; complete: CompleteFn; timeoutMs?: number };
 
-const REMIX_TIMEOUT_MS = 20_000;
+// Background only (no player waits on it), so it can take its time.
+const REMIX_TIMEOUT_MS = 60_000;
 
 /** Plain-language matchup facts from the real combat code, for the remix prompt. */
 export function describeMatchup(player: CharacterDef, world: WorldDef): string[] {
@@ -91,11 +93,21 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 
 /** One remix call in flight per (character, world): concurrent sessions share it. */
 const inFlight = new Map<string, Promise<RemixLines | null>>();
+const remixKey = (characterId: string, worldId: string) => `${characterId}\u0000${worldId}`;
 
-async function remixFor(character: CharacterDef, world: WorldDef, deps: SessionDeps): Promise<RemixLines | null> {
-  const { store, complete } = deps;
+/** The background remix job for this pair, if one is running (tests await it). */
+export function pendingRemix(characterId: string, worldId: string): Promise<RemixLines | null> | undefined {
+  return inFlight.get(remixKey(characterId, worldId));
+}
+
+/**
+ * Instant: the cached remix lines if REMIX_LINES has them, else null, and in that
+ * case start writing them in the background so the next session for this pair
+ * gets them. A session never waits on the AI.
+ */
+async function cachedRemixOrStart(character: CharacterDef, world: WorldDef, deps: SessionDeps): Promise<RemixLines | null> {
   try {
-    const cached = await store.getRemix(character.id, world.id);
+    const cached = await deps.store.getRemix(character.id, world.id);
     if (cached) {
       const check = checkRemix(cached, world);
       if (check.ok) return check.lines;
@@ -103,8 +115,14 @@ async function remixFor(character: CharacterDef, world: WorldDef, deps: SessionD
   } catch (err) {
     console.warn(`[session] reading REMIX_LINES failed: ${(err as Error).message.split("\n")[0]}`);
   }
+  // Own copies: the caller hands `character`/`world` to the game, which may change them.
+  void startRemix(structuredClone(character), structuredClone(world), deps);
+  return null;
+}
 
-  const key = `${character.id}\u0000${world.id}`;
+function startRemix(character: CharacterDef, world: WorldDef, deps: SessionDeps): Promise<RemixLines | null> {
+  const { store, complete } = deps;
+  const key = remixKey(character.id, world.id);
   const existing = inFlight.get(key);
   if (existing) return existing;
 
@@ -114,7 +132,7 @@ async function remixFor(character: CharacterDef, world: WorldDef, deps: SessionD
         complete(remixPrompt(character, world, describeMatchup(character, world)), remixLinesJsonSchema(), {
           maxTokens: 4000,
           temperature: 0.7,
-          effort: "low", // has to finish inside the 20 s budget
+          effort: "low", // runs in the background; the 60 s budget just bounds it
           timeoutMs: deps.timeoutMs ?? REMIX_TIMEOUT_MS,
         }),
         deps.timeoutMs ?? REMIX_TIMEOUT_MS,
@@ -150,7 +168,8 @@ export async function runSession(req: { characterId: string; worldId: string }, 
   const world = structuredClone(worldCart.world);
 
   // A character in its own world keeps the original dialogue: no call.
-  const remix = charCart.id === worldCart.id ? null : await remixFor(character, world, deps);
+  // Otherwise: cached remix lines if there are any, else the originals now and the remix next time.
+  const remix = charCart.id === worldCart.id ? null : await cachedRemixOrStart(character, world, deps);
   return {
     character,
     world,

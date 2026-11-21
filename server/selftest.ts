@@ -9,7 +9,7 @@ import type { GenerateEvent } from "../src/shared/api";
 import type { Cartridge, Rig } from "../src/shared/schema";
 import { validateCartridge } from "../src/shared/validate";
 import { cartridgeBaseId, runGenerate, slug, uniqueId } from "./generate";
-import { runSession } from "./session";
+import { pendingRemix, runSession } from "./session";
 import type { CompleteFn } from "./snowflake";
 import { MemoryStore } from "./store";
 
@@ -214,17 +214,18 @@ const remixLines = {
   playerDefeated: [],
 };
 
-await test("session: remix call, then cached", async () => {
+await test("session: instant originals, remix written in the background, then cached", async () => {
   const store = new MemoryStore([orlokCart, otherCart]);
   const complete = fake(remixLines);
   const s1 = await runSession({ characterId: "count-orlok", worldId: "transylvania" }, { store, complete });
-  assert.equal(s1.dialogueSource, "remix");
-  assert.deepEqual(s1.dialogue, remixLines);
+  assert.equal(s1.dialogueSource, "original", "first session does not wait for the AI");
   assert.equal(s1.character.id, "count-orlok");
   s1.world.rooms.pop(); // mutating the session must not touch the library
   assert.equal((await store.listReady())[1].world.rooms.length, 3);
+  assert.deepEqual(await pendingRemix("count-orlok", "transylvania"), remixLines);
   const s2 = await runSession({ characterId: "count-orlok", worldId: "transylvania" }, { store, complete });
   assert.equal(s2.dialogueSource, "remix");
+  assert.deepEqual(s2.dialogue, remixLines);
   assert.equal(complete.calls, 1, "second session uses REMIX_LINES cache");
 });
 
