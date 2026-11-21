@@ -977,7 +977,8 @@
         "knockback": 600,
         "animation": "beam"
       }
-    ]
+    ],
+    "powerTier": "cosmic"
   },
   "world": {
     "id": "jjk-opening-arc",
@@ -1446,7 +1447,8 @@
           ],
           "range": 20,
           "cooldown": 1.2
-        }
+        },
+        "powerTier": "street"
       },
       {
         "id": "eyeball-curse",
@@ -1810,7 +1812,8 @@
           ],
           "range": 160,
           "cooldown": 1.8
-        }
+        },
+        "powerTier": "street"
       },
       {
         "id": "finger-bearer",
@@ -2363,7 +2366,8 @@
           ],
           "range": 240,
           "cooldown": 2.2
-        }
+        },
+        "powerTier": "street"
       },
       {
         "id": "grasshopper-curse",
@@ -2800,7 +2804,8 @@
           ],
           "range": 20,
           "cooldown": 1
-        }
+        },
+        "powerTier": "peak-human"
       }
     ],
     "boss": {
@@ -3755,7 +3760,8 @@
         "shoot",
         "jump"
       ],
-      "phaseAt": 0.4
+      "phaseAt": 0.4,
+      "powerTier": "planet"
     },
     "npcs": [
       {

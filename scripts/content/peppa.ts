@@ -7,7 +7,7 @@
  */
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { ROOM_ROWS, type BossDef, type Cartridge, type CharacterDef, type EnemyDef, type NpcDef, type PropDef, type Rig, type Room, type Shape, type SizeClass } from "../../src/shared/schema";
+import { ROOM_ROWS, type BossDef, type Cartridge, type CharacterDef, type EnemyDef, type NpcDef, type PropDef, type Rig, type Room, type Shape, type SizeClass, type PowerTier } from "../../src/shared/schema";
 import { canReach, validateCartridge } from "../../src/shared/validate";
 
 // ---------------------------------------------------------------------------
@@ -632,6 +632,12 @@ const peppaNoAbilities: CharacterDef = {
   abilities: [peppa.abilities[0], peppa.abilities[1], { ...peppa.abilities[0], id: "no-jump", slot: 3 }, peppa.abilities[3]],
 };
 
+// Power tiers (SPEC 5.3): explicit per fighter, checked against the stat bands by validateCartridge.
+const TIERS: Record<string, PowerTier> = { peppa: "toddler", george: "toddler", "suzy-sheep": "toddler", "danny-dog": "toddler", "rebecca-rabbit": "toddler", "daddy-pig": "civilian" };
+for (const f of [cartridge.character, ...cartridge.world.enemies, cartridge.world.boss]) {
+  if (!TIERS[f.id]) throw new Error(`No power tier set for ${f.id}`);
+  f.powerTier = TIERS[f.id];
+}
 const problems = validateCartridge(cartridge);
 for (const room of cartridge.world.rooms) {
   const target = room.isBossRoom ? "B" : "E";

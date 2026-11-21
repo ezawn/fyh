@@ -14,6 +14,10 @@ import {
   TILE,
   TILES,
   TILE_CHARS,
+  TIER_BANDS,
+  attackStat,
+  tiersFitting,
+  type PowerTier,
   type CharacterDef,
   type Rig,
   type Room,
@@ -51,6 +55,11 @@ export function validateCartridge(json: unknown): string[] {
     if (a.mechanic === "flight" && a.duration <= 0) problems.push(`character.abilities.${i}: flight needs duration > 0`);
     if (a.mechanic === "superJump" && a.ratio <= 1) problems.push(`character.abilities.${i}: superJump needs ratio > 1`);
   });
+
+  // Power tiers: every fighter declares one and its stats must fit that tier's band
+  checkTier(character, "character", problems);
+  world.enemies.forEach((e, i) => checkTier(e, `world.enemies.${i} (${e.name})`, problems));
+  checkTier(world.boss, `world.boss (${world.boss.name})`, problems);
 
   // Rigs fit their canvas
   checkRig(character.rig, "character.rig", problems);
@@ -111,6 +120,24 @@ function dupes(ids: string[], path: string, problems: string[]) {
   for (const id of ids) {
     if (seen.has(id)) problems.push(`${path}: duplicate id "${id}"`);
     seen.add(id);
+  }
+}
+
+/** Written so the message can be sent straight back to the AI as a repair instruction. */
+function checkTier(f: { name: string; powerTier?: PowerTier; stats: { HP: number; AD: number; AP: number } }, path: string, problems: string[]) {
+  const fits = tiersFitting(f.stats);
+  const hint = fits.length ? `its stats fit "${fits.join('" or "')}"` : "its stats fit no tier";
+  if (!f.powerTier) {
+    problems.push(`${path}: missing powerTier (${hint}); pick the tier that matches the source material, then set stats inside that tier's band`);
+    return;
+  }
+  const b = TIER_BANDS[f.powerTier];
+  const atk = attackStat(f.stats);
+  const off: string[] = [];
+  if (f.stats.HP < b.hp[0] || f.stats.HP > b.hp[1]) off.push(`HP ${f.stats.HP} not in ${b.hp[0]}-${b.hp[1]}`);
+  if (atk < b.atk[0] || atk > b.atk[1]) off.push(`max(AD, AP) ${atk} not in ${b.atk[0]}-${b.atk[1]}`);
+  if (off.length) {
+    problems.push(`${path}: stats don't match powerTier "${f.powerTier}" (${off.join(", ")}; ${hint}). Keep the tier that fits the source and move the stats into its band`);
   }
 }
 
@@ -280,6 +307,16 @@ type AnyObj = Record<string, any>;
 export function autoFix<T>(json: T): T {
   if (!json || typeof json !== "object") return json;
   const cart: AnyObj = JSON.parse(JSON.stringify(json));
+
+  // Normalise tier spelling ("Peak Human" -> "peak-human"). Never invent a tier: a missing one stays missing.
+  const fixTier = (f: AnyObj | undefined) => {
+    if (f && typeof f.powerTier === "string") f.powerTier = kebab(f.powerTier);
+  };
+  fixTier(cart.character);
+  if (cart.world && typeof cart.world === "object") {
+    (Array.isArray(cart.world.enemies) ? cart.world.enemies : []).forEach(fixTier);
+    fixTier(cart.world.boss);
+  }
 
   const ch = cart.character;
   if (ch && typeof ch === "object") {

@@ -75,6 +75,43 @@ export const Stats = z.object({
 });
 export type Stats = z.infer<typeof Stats>;
 
+// ---------- Power tiers (SPEC 5.3) ----------
+// Every fighter (character, enemy, boss) declares a tier, and its stats must sit
+// inside that tier's band. This is what guarantees that separately generated
+// cartridges stay in order: a peak human can never out-stat a planet-level fighter.
+export const PowerTier = z.enum(["toddler", "civilian", "peak-human", "street", "city", "planet", "cosmic", "beyond"]);
+export type PowerTier = z.infer<typeof PowerTier>;
+
+/**
+ * Allowed ranges per tier (inclusive). "atk" is the fighter's main attack stat, max(AD, AP).
+ * Bands overlap slightly at the edges so borderline characters aren't rejected,
+ * but tiers two steps apart never overlap.
+ */
+export const TIER_BANDS: Record<PowerTier, { hp: [number, number]; atk: [number, number]; example: string }> = {
+  toddler: { hp: [1, 40], atk: [0, 10], example: "Peppa Pig (HP 15, AD 2)" },
+  civilian: { hp: [20, 100], atk: [0, 25], example: "an ordinary adult, a wolf (HP 50, AD 8)" },
+  "peak-human": { hp: [60, 300], atk: [15, 120], example: "John Wick (HP 120, AD 45)" },
+  street: { hp: [200, 2_000], atk: [60, 450], example: "Spider-Man (HP 600, AD 150)" },
+  city: { hp: [1_000, 8_000], atk: [150, 1_500], example: "a strong sorcerer (HP 3,000, AP 600)" },
+  planet: { hp: [5_000, 50_000], atk: [500, 5_000], example: "Goku, iconic (HP 10,000, AD/AP 1,000)" },
+  cosmic: { hp: [30_000, 500_000], atk: [3_000, 50_000], example: "Gojo (HP 30,000, AP 6,000); multiverse-level beings" },
+  beyond: { hp: [200_000, 1_000_000], atk: [20_000, 1_000_000], example: "reality-warping, multiverse-ending beings (e.g. Anti-Spiral)" },
+};
+
+/** The fighter's main attack stat used for tier checks. */
+export function attackStat(stats: { AD: number; AP: number }): number {
+  return Math.max(stats.AD, stats.AP);
+}
+
+/** Tiers whose bands contain these stats (lowest first). Empty if none fit. */
+export function tiersFitting(stats: { HP: number; AD: number; AP: number }): PowerTier[] {
+  const atk = attackStat(stats);
+  return PowerTier.options.filter((t) => {
+    const b = TIER_BANDS[t];
+    return stats.HP >= b.hp[0] && stats.HP <= b.hp[1] && atk >= b.atk[0] && atk <= b.atk[1];
+  });
+}
+
 // ---------- Hax (SPEC 5.5) ----------
 export const HaxTag = z.enum(["INFINITY", "BULLETPROOF", "INTANGIBLE", "REGENERATION", "FLIGHT"]);
 export type HaxTag = z.infer<typeof HaxTag>;
@@ -143,6 +180,8 @@ export const CharacterDef = z.object({
     jumpStrength: z.number().min(200).max(900),
     canFly: z.boolean(),
   }),
+  // Required by validateCartridge (optional in the type only so older code still compiles).
+  powerTier: PowerTier.optional(),
   stats: Stats,
   tags: z.array(HaxTag).max(5),
   abilities: z.array(Ability).length(4), // slots 1-4: basic, special, movement, ultimate
@@ -170,6 +209,7 @@ export const EnemyDef = z.object({
   name: z.string().min(1),
   rig: Rig,
   collisionBox: Box,
+  powerTier: PowerTier.optional(), // required by validateCartridge
   stats: Stats,
   tags: z.array(HaxTag).max(5),
   behaviour: z.enum(["walker", "jumper", "flyer", "shooter"]),
