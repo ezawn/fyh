@@ -4,7 +4,9 @@
 
 Goku one-shots everything in Peppa Pig's world. Peppa gets flattened in Dragon Ball's. Gojo's Infinity makes Goku's attacks show `IMMUNE`, and only attacks that cut through space or nullify techniques can land a hit. The fight is never rebalanced and the mission never changes. Only the dialogue reacts to the matchup.
 
-> Demo video: coming soon.
+[![Hax demo video](https://img.youtube.com/vi/mzTg_PZi25A/hqdefault.jpg)](https://youtu.be/mzTg_PZi25A)
+
+**▶ [Watch the demo video](https://youtu.be/mzTg_PZi25A)**
 
 ## How it works
 
@@ -28,7 +30,7 @@ Goku one-shots everything in Peppa Pig's world. Peppa gets flattened in Dragon B
 - Floating damage numbers and `IMMUNE`, knockback, i-frames, walker/jumper/flyer/shooter enemies, and a boss with attack patterns and a health bar.
 - Three chiptune loops generated in code with Web Audio: `STAGE`, `BOSS`, and `STOMP` (when you massively outclass the boss).
 
-Controls: **WASD** move · **Space** jump · **mouse** aim · **click** attack · **1–4** abilities · **M** mute · **Esc** quit.
+Controls: **WASD** move · **Space** jump · **mouse** aim · **click** attack · **1–4** abilities · **M** mute · **F** fullscreen · **Esc** quit.
 
 Demo cartridges: **Goku** (Dragon Ball ep 1), **Peppa** (Peppa Pig "Muddy Puddles") and **Gojo** (Jujutsu Kaisen).
 
