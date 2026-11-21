@@ -2,7 +2,8 @@
  * SERVER LANE. Picks the AI backend for generation and remix lines.
  * Snowflake trial accounts can't call Cortex AI_COMPLETE, so the default is the
  * Anthropic API when ANTHROPIC_API_KEY is set; the library stays in Snowflake.
- * Set AI_PROVIDER=cortex to go back to Cortex on a paid account. With neither,
+ * Set AI_PROVIDER=gemini for Google's Gemini API (free tier, GEMINI_API_KEY), or
+ * AI_PROVIDER=cortex to go back to Cortex on a paid account. With none of them,
  * AI is off: generation says so honestly and sessions use the original dialogue.
  */
 import "dotenv/config";
@@ -10,15 +11,146 @@ import Anthropic from "@anthropic-ai/sdk";
 import { cortexSafeSchema } from "./cortex-schema";
 import { cortexComplete, type CompleteFn, type CompleteOptions } from "./snowflake";
 
-export type AiProvider = "anthropic" | "cortex" | "none";
+export type AiProvider = "anthropic" | "gemini" | "cortex" | "none";
 
 export const AI_OFF_MESSAGE =
-  "Live generation is off: no AI backend is configured (Snowflake trial accounts can't use Cortex AI, and no Anthropic key is set). The shared library still works.";
+  "Live generation is off: no AI backend is configured (Snowflake trial accounts can't use Cortex AI, and no AI key is set). The shared library still works.";
 
 export function aiProvider(): AiProvider {
   const p = process.env.AI_PROVIDER;
-  if (p === "anthropic" || p === "cortex") return p;
-  return process.env.ANTHROPIC_API_KEY ? "anthropic" : "none";
+  if (p === "anthropic" || p === "gemini" || p === "cortex") return p;
+  if (process.env.ANTHROPIC_API_KEY) return "anthropic";
+  return process.env.GEMINI_API_KEY ? "gemini" : "none";
+}
+
+const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta";
+
+/** Keeps the schema's structure down to `depth` levels of objects/arrays; deeper values become open. */
+export function shallowSchema(schema: unknown, depth: number): unknown {
+  if (Array.isArray(schema)) return schema.map((s) => shallowSchema(s, depth));
+  if (!schema || typeof schema !== "object") return schema;
+  const s = schema as Record<string, unknown>;
+  if (depth <= 0 && (s.type === "object" || s.type === "array" || s.anyOf)) {
+    return s.type === "array" ? { type: "array", items: {} } : { type: "object" };
+  }
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(s)) {
+    if (k === "properties" && v && typeof v === "object") {
+      out[k] = Object.fromEntries(Object.entries(v).map(([name, sub]) => [name, shallowSchema(sub, depth - 1)]));
+    } else if (k === "items") {
+      out[k] = shallowSchema(v, depth - 1);
+    } else if (k === "anyOf") {
+      out[k] = shallowSchema(v, depth);
+    } else {
+      out[k] = v;
+    }
+  }
+  return out;
+}
+
+type GeminiResponse = {
+  candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] }; finishReason?: string }[];
+  promptFeedback?: { blockReason?: string };
+  error?: { code?: number; message?: string; status?: string };
+};
+
+/** One Gemini generateContent call constrained by a JSON schema; returns the parsed object. */
+export async function geminiComplete<T = unknown>(prompt: string, jsonSchema: unknown, opts: CompleteOptions = {}): Promise<T> {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("Missing GEMINI_API_KEY in .env");
+  const model = process.env.GEMINI_MODEL ?? "gemini-3.6-flash";
+  const schema = cortexSafeSchema(jsonSchema);
+
+  // Gemini 3+ models take a thinking level; map our effort onto it so short jobs stay fast.
+  const thinkingLevel = { low: "LOW", medium: "MEDIUM", high: "HIGH", xhigh: "HIGH", max: "HIGH" }[opts.effort ?? "medium"];
+  const thinkingConfig = /^gemini-([3-9]|\d{2,})/.test(model) ? { thinkingConfig: { thinkingLevel } } : {};
+
+  // Streams (SSE) so long generations aren't cut off by fetch's 5-minute wait for response headers.
+  // Newer API versions take a JSON Schema as responseJsonSchema; older ones only know responseSchema.
+  const call = async (schemaField: "responseJsonSchema" | "responseSchema", schema: unknown, text: string) => {
+    const res = await fetch(`${GEMINI_API}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text }] }],
+        generationConfig: { responseMimeType: "application/json", [schemaField]: schema, maxOutputTokens: opts.maxTokens ?? 32000, ...thinkingConfig },
+      }),
+      signal: opts.timeoutMs ? AbortSignal.timeout(opts.timeoutMs) : undefined,
+    });
+    if (!res.ok || !res.body) return { res, body: (await res.json().catch(() => ({}))) as GeminiResponse };
+
+    // Merge the streamed chunks into one response.
+    let out = "";
+    let finishReason: string | undefined;
+    let blockReason: string | undefined;
+    let buffer = "";
+    const decoder = new TextDecoder();
+    const take = (line: string) => {
+      if (!line.startsWith("data:")) return;
+      const chunk = JSON.parse(line.slice(5)) as GeminiResponse;
+      blockReason ??= chunk.promptFeedback?.blockReason;
+      const c = chunk.candidates?.[0];
+      out += (c?.content?.parts ?? []).filter((p) => !p.thought).map((p) => p.text ?? "").join("");
+      finishReason = c?.finishReason ?? finishReason;
+    };
+    const reader = res.body.getReader();
+    for (let r = await reader.read(); !r.done; r = await reader.read()) {
+      buffer += decoder.decode(r.value, { stream: true });
+      const lines = buffer.split(/\r?\n/);
+      buffer = lines.pop() ?? "";
+      lines.forEach(take);
+    }
+    take(buffer);
+    const body: GeminiResponse = {
+      candidates: [{ content: { parts: [{ text: out }] }, finishReason }],
+      promptFeedback: blockReason ? { blockReason } : undefined,
+    };
+    return { res, body };
+  };
+
+  // Free-tier models are often busy (503) or rate-limited (429): retry those twice with a short backoff.
+  const busyRetry: typeof call = async (field, s, text) => {
+    let r = await call(field, s, text);
+    for (const waitMs of [3000, 8000]) {
+      if (r.res.status !== 503 && r.res.status !== 429) break;
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+      r = await call(field, s, text);
+    }
+    return r;
+  };
+  let { res, body } = await busyRetry("responseJsonSchema", schema, prompt);
+  if (res.status === 400 && /responseJsonSchema/i.test(body.error?.message ?? "")) ({ res, body } = await busyRetry("responseSchema", schema, prompt));
+  // Gemini can't serve schemas as big as a whole cartridge. Retry with shallower ones and put the
+  // full schema in the prompt instead; validateCartridge + one repair call enforce the rest.
+  const withSchema = `${prompt}\n\nYour JSON must match this JSON Schema exactly, including every required field at every depth:\n${JSON.stringify(schema)}`;
+  for (const depth of [4, 3, 2]) {
+    if (!(res.status === 400 && /too many states/i.test(body.error?.message ?? ""))) break;
+    ({ res, body } = await busyRetry("responseJsonSchema", shallowSchema(schema, depth), withSchema));
+  }
+  if (!res.ok) throw new Error(`Gemini ${res.status} ${body.error?.status ?? ""}: ${(body.error?.message ?? "request failed").split("\n")[0]}`);
+
+  if (body.promptFeedback?.blockReason) throw new Error(`Gemini blocked the prompt (${body.promptFeedback.blockReason})`);
+  const candidate = body.candidates?.[0];
+  const finish = candidate?.finishReason;
+  if (finish === "MAX_TOKENS") throw new Error(`Gemini's output was cut off at ${opts.maxTokens ?? 32000} tokens`);
+  if (finish && finish !== "STOP") throw new Error(`Gemini stopped early (${finish})`);
+  const text = (candidate?.content?.parts ?? []).filter((p) => !p.thought).map((p) => p.text ?? "").join("");
+  if (!text) throw new Error(`Gemini returned no output (model ${model})`);
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(`Gemini returned text that is not JSON (model ${model}): ${text.slice(0, 200)}`);
+  }
+}
+
+/** Models this key can call with generateContent (for picking GEMINI_MODEL). */
+export async function geminiModels(): Promise<{ name: string; outputTokenLimit?: number }[]> {
+  const res = await fetch(`${GEMINI_API}/models?pageSize=200`, { headers: { "x-goog-api-key": process.env.GEMINI_API_KEY ?? "" } });
+  const body = (await res.json()) as { models?: { name: string; outputTokenLimit?: number; supportedGenerationMethods?: string[] }[]; error?: { message?: string } };
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${body.error?.message ?? "could not list models"}`);
+  return (body.models ?? [])
+    .filter((m) => m.supportedGenerationMethods?.includes("generateContent"))
+    .map((m) => ({ name: m.name.replace(/^models\//, ""), outputTokenLimit: m.outputTokenLimit }));
 }
 
 /** Structured outputs want every object closed; Cortex-safe stripping already drops unsupported keywords. */
@@ -72,6 +204,7 @@ export async function anthropicComplete<T = unknown>(prompt: string, jsonSchema:
 export const aiComplete: CompleteFn = (prompt, jsonSchema, opts) => {
   const provider = aiProvider();
   if (provider === "anthropic") return anthropicComplete(prompt, jsonSchema, opts);
+  if (provider === "gemini") return geminiComplete(prompt, jsonSchema, opts);
   if (provider === "cortex") return cortexComplete(prompt, jsonSchema, opts);
   return Promise.reject(new Error(AI_OFF_MESSAGE));
 };

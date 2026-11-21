@@ -4,7 +4,7 @@
  * Run: npx tsx server/check-ai.ts   (prints no credentials)
  */
 import { generationJsonSchema } from "../src/shared/schema";
-import { aiComplete, aiProvider } from "./ai";
+import { aiComplete, aiProvider, geminiModels } from "./ai";
 
 const small = {
   type: "object",
@@ -14,6 +14,10 @@ const small = {
 
 async function main() {
   console.log(`AI provider: ${aiProvider()}`);
+  if (aiProvider() === "gemini") {
+    const models = await geminiModels();
+    console.log(`Gemini model: ${process.env.GEMINI_MODEL ?? "gemini-3.6-flash"} (key can use: ${models.map((m) => m.name).join(", ")})`);
+  }
   let started = Date.now();
   const out = await aiComplete<{ answer: string; number: number }>('Reply with answer "ok" and number 7.', small, { maxTokens: 2000, effort: "low" });
   console.log(`Small schema OK (${Date.now() - started} ms): ${JSON.stringify(out)}`);
