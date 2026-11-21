@@ -462,7 +462,7 @@ All three are hand-finished JSON in `content/`, validated, and seeded into Snowf
 
 | Cartridge | Character (iconic) | World (3 rooms) | Boss |
 |---|---|---|---|
-| Dragon Ball ep 1 | **Goku**: planet-level, ki AP + martial AD. 1 Punch (melee, physical), 2 Ki Blast (projectile, magic, ENERGY), 3 Nimbus (flight), 4 Kamehameha (beam, magic, ENERGY) | Mount Paozu → Forest → Bear Thief's clearing | Bear Thief |
+| Dragon Ball ep 1 | **Goku**: planet-level, ki AP + martial AD. 1 Punch (melee, physical), 2 Ki Blast (projectile, magic, ENERGY), 3 Instant Transmission (teleport), 4 Kamehameha (beam, magic, ENERGY) | Mount Paozu → Forest → Bear Thief's clearing | Bear Thief |
 | Peppa Pig "Muddy Puddles" | **Peppa**: toddler tier, `tiny`. 1 Push (melee), 2 Muddy Splash (aoe), 3 Big Jump (superJump), 4 Giggle Fit (aoe, tiny damage, big knockback) | Peppa's hill → Muddy fields → The biggest puddle | Daddy Pig (design choice) |
 | Jujutsu Kaisen (opening arc) | **Gojo**: cosmic-adjacent, `tall`, tags `INFINITY`, `FLIGHT`. 1 Strike (melee, physical), 2 Blue (aoe, pull, magic), 3 Teleport, 4 Hollow Purple (beam, magic, `SPACE_BYPASS`) | School grounds → Corridors → Rooftop | Sukuna (in Yuji's body) |
 

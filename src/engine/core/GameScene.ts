@@ -7,6 +7,7 @@
  */
 import Phaser from "phaser";
 import { GRAVITY, RIG_SCALE, TILE } from "../../shared/schema";
+import { jumpVelocity } from "./jump";
 import type { BossDef, CharacterDef, DialogueLine, EnemyDef, NpcDef, Room } from "../../shared/schema";
 import { createCombat } from "../combat";
 import { BackdropView } from "../render/backdrop";
@@ -602,6 +603,10 @@ export class GameScene extends Phaser.Scene {
       this.toggleMute();
       return;
     }
+    if (code === "KeyF") {
+      this.toggleFullscreen();
+      return;
+    }
     const slot = ({ Digit1: 1, Digit2: 2, Digit3: 3, Digit4: 4, Numpad1: 1, Numpad2: 2, Numpad3: 3, Numpad4: 4 } as Record<string, number | undefined>)[code];
     if (slot) this.run.selectedSlot = slot as 1 | 2 | 3 | 4;
   }
@@ -619,6 +624,10 @@ export class GameScene extends Phaser.Scene {
       this.toggleMute();
       return;
     }
+    if (this.hud.hitFullscreen(h.x, h.y)) {
+      this.toggleFullscreen();
+      return;
+    }
     if (this.dialogue.active) {
       this.dialogue.advance();
       return;
@@ -631,6 +640,16 @@ export class GameScene extends Phaser.Scene {
       console.error("[engine] combat.useAbility failed", err);
     }
     if (res === "unsupported") this.hud.flash(`Slot ${this.run.selectedSlot}: not supported yet`, this.time.now);
+  }
+
+  /** F key / HUD button. Browsers only allow this from a user gesture, which both are. */
+  private toggleFullscreen() {
+    try {
+      if (this.scale.isFullscreen) this.scale.stopFullscreen();
+      else this.scale.startFullscreen();
+    } catch (err) {
+      console.error("[engine] fullscreen failed", err);
+    }
   }
 
   private toggleMute() {
@@ -716,7 +735,7 @@ export class GameScene extends Phaser.Scene {
     if (stunned) return;
     body.setVelocityX(dirX * speed);
     if (space && now - this.lastGrounded < 100) {
-      body.setVelocityY(-jumpStrength * (p.superJumpMult || 1));
+      body.setVelocityY(-jumpVelocity(jumpStrength, p.superJumpMult || 1)); // normalised: see core/jump.ts
       p.superJumpMult = 1;
       this.lastGrounded = -1e9;
     }

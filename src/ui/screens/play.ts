@@ -74,7 +74,6 @@ export function playScreen(root: HTMLElement) {
         { class: "panel center-panel" },
         h("p", { class: "loading blink" }, "Loading session…"),
         h("p", { class: "small muted" }, `${ch?.name ?? req.characterId} × ${w?.name ?? req.worldId}`),
-        h("p", { class: "tiny muted" }, "The server may be writing matchup flavour dialogue (up to ~20 s)."),
       ),
     );
     createSession(req, !!state.library?.offline).then(

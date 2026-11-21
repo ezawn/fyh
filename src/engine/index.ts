@@ -39,7 +39,8 @@ export function startGame(parent: HTMLElement, session: Session, onExit: (result
     pixelArt: true,
     backgroundColor: "#000000",
     physics: { default: "arcade", arcade: { gravity: { x: 0, y: 0 }, debug: false } },
-    scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.CENTER_BOTH },
+    // fullscreenTarget = parent: F / the HUD button fullscreens the game's own box, and fit() rescales it.
+    scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.CENTER_BOTH, fullscreenTarget: parent },
   });
 
   // Integer scaling: largest whole-number zoom that fits the parent.
@@ -49,6 +50,9 @@ export function startGame(parent: HTMLElement, session: Session, onExit: (result
     game.scale.setZoom(Math.max(1, Math.floor(Math.min(w / VIEW_W, h / VIEW_H))));
   };
   window.addEventListener("resize", fit);
+  // Entering/leaving fullscreen resizes the parent; refit once the browser has laid it out.
+  const refitSoon = () => requestAnimationFrame(() => requestAnimationFrame(fit));
+  document.addEventListener("fullscreenchange", refitSoon);
   game.events.once(Phaser.Core.Events.READY, () => {
     fit();
     game.scene.add("game", GameScene, true, { session, roomIndex: 0, onExit: exit });
@@ -57,6 +61,8 @@ export function startGame(parent: HTMLElement, session: Session, onExit: (result
   return {
     destroy() {
       window.removeEventListener("resize", fit);
+      document.removeEventListener("fullscreenchange", refitSoon);
+      if (document.fullscreenElement === parent) void document.exitFullscreen().catch(() => {});
       game.destroy(true);
     },
   };
