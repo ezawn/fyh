@@ -272,6 +272,8 @@ The AI places every character and enemy relative to these anchors, so separately
 | Planet-level | Goku (iconic) | 10,000 | 1,000 | 1,000 | 800 | 800 |
 | Cosmic | multiverse-level beings | 100,000+ | 10,000+ | 10,000+ | 5,000+ | 5,000+ |
 
+**Enforced in code:** every character, enemy and boss has a required `powerTier` (`toddler`, `civilian`, `peak-human`, `street`, `city`, `planet`, `cosmic`, `beyond`). `validateCartridge` rejects any fighter whose HP or max(AD, AP) falls outside its tier's band (`TIER_BANDS` in `src/shared/schema.ts`), and the error text tells the AI which tiers its stats do fit, so the repair call can fix it. Tiers two steps apart never overlap, so a peak human can never out-stat a planet-level fighter, whichever cartridge each came from.
+
 The prompt asks the AI to explain its placement in `assumptions` (e.g. "Planet-level: destroys the moon in the original series").
 
 ### 5.4 What a mismatch looks like (intended)

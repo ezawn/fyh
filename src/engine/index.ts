@@ -16,7 +16,7 @@ export type GameHandle = { destroy(): void };
  * Mechanics the engine actually implements right now (SPEC §9). The UI must
  * show any ability whose mechanic is not in this list as "not supported".
  */
-export const SUPPORTED_MECHANICS: readonly string[] = [];
+export { SUPPORTED_MECHANICS } from "./combat";
 
 /**
  * Mount the game for a session (POST /api/session response) inside `parent`.

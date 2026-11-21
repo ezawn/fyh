@@ -1,9 +1,9 @@
-// Builds the hand-finished Jujutsu Kaisen demo cartridge (docs/SPEC.md section 11).
+﻿// Builds the hand-finished Jujutsu Kaisen demo cartridge (docs/SPEC.md section 11).
 // Run: npx tsx scripts/content/jjk.ts   -> writes content/jjk-gojo.json
 // Rigs and props are drawn at 2x detail (contract v1.1): coordinates are rig pixels, drawn at RIG_SCALE 0.5.
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import type { Ability, BossDef, Cartridge, CharacterDef, EnemyDef, NpcDef, PropDef, PropPlacement, Rig, Room, Shape } from "../../src/shared/schema";
+import type { Ability, BossDef, Cartridge, CharacterDef, EnemyDef, NpcDef, PropDef, PropPlacement, Rig, Room, Shape, PowerTier } from "../../src/shared/schema";
 import { RIG_SCALE, ROOM_ROWS, TILE, TILES } from "../../src/shared/schema";
 import { canReach, validateCartridge } from "../../src/shared/validate";
 
@@ -1399,6 +1399,12 @@ const cartridge: Cartridge = {
 // Checks
 // ---------------------------------------------------------------------------
 
+// Power tiers (SPEC 5.3): explicit per fighter, checked against the stat bands by validateCartridge.
+const TIERS: Record<string, PowerTier> = { gojo: "cosmic", "crawling-curse": "street", "eyeball-curse": "street", "finger-bearer": "street", "grasshopper-curse": "peak-human", "sukuna-yuji": "planet" };
+for (const f of [cartridge.character, ...cartridge.world.enemies, cartridge.world.boss]) {
+  if (!TIERS[f.id]) throw new Error(`No power tier set for ${f.id}`);
+  f.powerTier = TIERS[f.id];
+}
 const problems = validateCartridge(cartridge);
 
 // Peppa-movement reachability: the weakest walker in the demo must finish every room without abilities.
@@ -1443,12 +1449,12 @@ cartridge.world.rooms.forEach((room, i) => {
 });
 
 if (problems.length) {
-  console.error(`✗ jjk-gojo has ${problems.length} problem(s):\n  - ${problems.join("\n  - ")}`);
+  console.error(`âœ— jjk-gojo has ${problems.length} problem(s):\n  - ${problems.join("\n  - ")}`);
   process.exit(1);
 }
 
 const out = path.join("content", "jjk-gojo.json");
 mkdirSync("content", { recursive: true });
 writeFileSync(out, JSON.stringify(cartridge, null, 2) + "\n");
-console.log(`✓ wrote ${out}`);
+console.log(`âœ“ wrote ${out}`);
 for (const room of cartridge.world.rooms) console.log(`\n${room.name} (${room.layout[0].length} cols)\n${room.layout.join("\n")}`);
