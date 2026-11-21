@@ -19,6 +19,8 @@ export interface Store {
   save(cart: Cartridge): Promise<void>;
   getRemix(characterId: string, worldId: string): Promise<RemixLines | null>;
   saveRemix(characterId: string, worldId: string, lines: RemixLines): Promise<void>;
+  /** Removes a cartridge and any cached remix lines that use its character or world. False if it didn't exist. */
+  delete(id: string): Promise<boolean>;
 }
 
 export class IdTakenError extends Error {
@@ -129,6 +131,13 @@ export class SnowflakeStore implements Store {
       [characterId, worldId, JSON.stringify(lines)],
     );
   }
+
+  async delete(id: string): Promise<boolean> {
+    const cart = await this.get(id);
+    if (!cart) return false;
+    await query(`DELETE FROM ${table("REMIX_LINES")} WHERE CHARACTER_ID = ? OR WORLD_ID = ?`, [cart.character.id, cart.world.id]);
+    return affected(await query(`DELETE FROM ${table("CARTRIDGES")} WHERE ID = ?`, [id])) > 0;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -182,6 +191,15 @@ export class MemoryStore implements Store {
   }
   async saveRemix(characterId: string, worldId: string, lines: RemixLines) {
     this.remix.set(`${characterId}\u0000${worldId}`, structuredClone(lines));
+  }
+  async delete(id: string) {
+    const cart = this.carts.get(id);
+    if (!cart) return false;
+    for (const key of [...this.remix.keys()]) {
+      const [ch, w] = key.split("\u0000");
+      if (ch === cart.character.id || w === cart.world.id) this.remix.delete(key);
+    }
+    return this.carts.delete(id);
   }
 }
 

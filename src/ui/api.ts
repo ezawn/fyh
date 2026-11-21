@@ -100,6 +100,11 @@ export async function fetchLibrary(): Promise<Library> {
   }
 }
 
+/** Removes a cartridge (its character and world) from the shared library. */
+export async function deleteCartridge(id: string): Promise<void> {
+  await request(`/api/cartridges/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
 // ---------- Session ----------
 
 export async function createSession(req: SessionRequest, offlineLibrary: boolean): Promise<SessionResponse> {
