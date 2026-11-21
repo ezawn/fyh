@@ -1,0 +1,1377 @@
+{
+  "id": "jjk-gojo",
+  "schemaVersion": 1,
+  "status": "ready",
+  "source": {
+    "title": "Jujutsu Kaisen",
+    "medium": "anime",
+    "versionOrEpisode": "Season 1 opening arc (Episodes 1-2)",
+    "requestedCharacter": "Gojo"
+  },
+  "character": {
+    "id": "gojo",
+    "name": "Satoru Gojo",
+    "source": "Jujutsu Kaisen",
+    "versionOrEpisode": "Iconic (Limitless: Infinity, Blue, Red, Hollow Purple, teleport)",
+    "assumptions": [
+      "Uses the iconic Gojo, not only what he shows in episodes 1-2: Limitless/Infinity, Lapse: Blue, Reversal: Red, Hollow Purple and short-range teleport.",
+      "Near the top of the reference scale (between planet-level Goku and cosmic): stated to be the strongest sorcerer alive; Hollow Purple erases everything in its path.",
+      "AP 6000 is far above AD 1500 because his power is cursed energy, not muscle; MR 3000 reflects his Six Eyes and cursed energy control.",
+      "HP 30000 is 3x iconic Goku's, reflecting that in-universe almost nothing can touch him while Infinity is up.",
+      "INFINITY tag: attacks without SPACE_BYPASS or NULLIFY never reach him. FLIGHT tag: he levitates freely in the series.",
+      "Red is not its own slot: Hollow Purple stands in for Red + Blue combined. Teleport uses the engine's teleport mechanic.",
+      "Lapse: Blue is an aoe with negative knockback, so it pulls enemies in."
+    ],
+    "rig": {
+      "sizeClass": "tall",
+      "parts": {
+        "head": [
+          {
+            "type": "rect",
+            "x": 5,
+            "y": 4,
+            "w": 6,
+            "h": 7,
+            "color": "#f2d8c6"
+          }
+        ],
+        "torso": [
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 11,
+            "w": 8,
+            "h": 14,
+            "color": "#1b2036"
+          },
+          {
+            "type": "rect",
+            "x": 5,
+            "y": 10,
+            "w": 6,
+            "h": 3,
+            "color": "#11152a"
+          },
+          {
+            "type": "rect",
+            "x": 7,
+            "y": 13,
+            "w": 2,
+            "h": 10,
+            "color": "#11152a"
+          }
+        ],
+        "armFront": [
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 12,
+            "w": 4,
+            "h": 12,
+            "color": "#1b2036"
+          },
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 24,
+            "w": 4,
+            "h": 2,
+            "color": "#f2d8c6"
+          }
+        ],
+        "armBack": [
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 12,
+            "w": 4,
+            "h": 12,
+            "color": "#11152a"
+          },
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 24,
+            "w": 4,
+            "h": 2,
+            "color": "#f2d8c6"
+          }
+        ],
+        "legFront": [
+          {
+            "type": "rect",
+            "x": 8,
+            "y": 25,
+            "w": 3,
+            "h": 13,
+            "color": "#1b2036"
+          },
+          {
+            "type": "rect",
+            "x": 8,
+            "y": 38,
+            "w": 4,
+            "h": 2,
+            "color": "#050507"
+          }
+        ],
+        "legBack": [
+          {
+            "type": "rect",
+            "x": 5,
+            "y": 25,
+            "w": 3,
+            "h": 13,
+            "color": "#11152a"
+          },
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 38,
+            "w": 4,
+            "h": 2,
+            "color": "#050507"
+          }
+        ],
+        "extras": [
+          {
+            "attachTo": "head",
+            "shapes": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 2,
+                "w": 8,
+                "h": 3,
+                "color": "#f4f6fb"
+              },
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 1,
+                "w": 2,
+                "h": 3,
+                "color": "#f4f6fb"
+              },
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 0,
+                "w": 2,
+                "h": 3,
+                "color": "#f4f6fb"
+              },
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 0,
+                "w": 2,
+                "h": 3,
+                "color": "#f4f6fb"
+              },
+              {
+                "type": "rect",
+                "x": 11,
+                "y": 1,
+                "w": 2,
+                "h": 3,
+                "color": "#f4f6fb"
+              },
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 3,
+                "w": 1,
+                "h": 3,
+                "color": "#f4f6fb"
+              },
+              {
+                "type": "rect",
+                "x": 12,
+                "y": 3,
+                "w": 1,
+                "h": 3,
+                "color": "#f4f6fb"
+              },
+              {
+                "type": "rect",
+                "x": 7,
+                "y": 1,
+                "w": 1,
+                "h": 3,
+                "color": "#c9d3e3"
+              },
+              {
+                "type": "rect",
+                "x": 10,
+                "y": 2,
+                "w": 1,
+                "h": 2,
+                "color": "#c9d3e3"
+              }
+            ]
+          },
+          {
+            "attachTo": "head",
+            "shapes": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 5,
+                "w": 8,
+                "h": 3,
+                "color": "#0e0e14"
+              }
+            ]
+          }
+        ]
+      },
+      "pivots": {
+        "neck": [
+          8,
+          11
+        ],
+        "shoulder": [
+          8,
+          13
+        ],
+        "hip": [
+          8,
+          25
+        ]
+      }
+    },
+    "collisionBox": {
+      "w": 12,
+      "h": 38
+    },
+    "movement": {
+      "speed": 240,
+      "jumpStrength": 560,
+      "canFly": true
+    },
+    "stats": {
+      "HP": 30000,
+      "AD": 1500,
+      "AP": 6000,
+      "ARM": 1500,
+      "MR": 3000,
+      "ARM_PEN": 200,
+      "MAGIC_PEN": 1000
+    },
+    "tags": [
+      "INFINITY",
+      "FLIGHT"
+    ],
+    "abilities": [
+      {
+        "id": "strike",
+        "name": "Strike",
+        "slot": 1,
+        "mechanic": "melee",
+        "damageType": "physical",
+        "attackTags": [
+          "PHYSICAL"
+        ],
+        "ratio": 1,
+        "range": 26,
+        "cooldown": 0.3,
+        "duration": 0,
+        "knockback": 200,
+        "animation": "punch"
+      },
+      {
+        "id": "lapse-blue",
+        "name": "Lapse: Blue",
+        "slot": 2,
+        "mechanic": "aoe",
+        "damageType": "magic",
+        "attackTags": [
+          "ENERGY"
+        ],
+        "ratio": 1.5,
+        "range": 64,
+        "cooldown": 4,
+        "duration": 0.4,
+        "knockback": -500,
+        "animation": "cast"
+      },
+      {
+        "id": "teleport",
+        "name": "Teleport",
+        "slot": 3,
+        "mechanic": "teleport",
+        "damageType": "magic",
+        "attackTags": [],
+        "ratio": 0,
+        "range": 160,
+        "cooldown": 3,
+        "duration": 0,
+        "knockback": 0,
+        "animation": "cast"
+      },
+      {
+        "id": "hollow-purple",
+        "name": "Hollow Purple",
+        "slot": 4,
+        "mechanic": "beam",
+        "damageType": "magic",
+        "attackTags": [
+          "ENERGY",
+          "SPACE_BYPASS"
+        ],
+        "ratio": 5,
+        "range": 400,
+        "cooldown": 12,
+        "duration": 0.7,
+        "knockback": 600,
+        "animation": "beam"
+      }
+    ]
+  },
+  "world": {
+    "id": "jjk-opening-arc",
+    "name": "Jujutsu Kaisen: The Opening Arc",
+    "source": "Jujutsu Kaisen",
+    "visualStyle": {
+      "palette": {
+        "sky": "#0d0b26",
+        "skyBottom": "#3a1f4f",
+        "ground": "#4a4d57",
+        "groundTop": "#7a7e8a",
+        "platform": "#2a2c38",
+        "accent": "#a3245c"
+      },
+      "backdrop": "school"
+    },
+    "enemies": [
+      {
+        "id": "crawling-curse",
+        "name": "Crawling Curse",
+        "rig": {
+          "sizeClass": "small",
+          "parts": {
+            "head": [
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 3,
+                "w": 10,
+                "h": 6,
+                "color": "#6e5a88"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 7,
+                "w": 8,
+                "h": 2,
+                "color": "#1a1222"
+              },
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 7,
+                "w": 1,
+                "h": 1,
+                "color": "#e9e2c9"
+              },
+              {
+                "type": "rect",
+                "x": 7,
+                "y": 7,
+                "w": 1,
+                "h": 1,
+                "color": "#e9e2c9"
+              },
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 7,
+                "w": 1,
+                "h": 1,
+                "color": "#e9e2c9"
+              },
+              {
+                "type": "rect",
+                "x": 11,
+                "y": 7,
+                "w": 1,
+                "h": 1,
+                "color": "#e9e2c9"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 2,
+                "y": 8,
+                "w": 12,
+                "h": 8,
+                "color": "#4b3b5e"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 10,
+                "w": 8,
+                "h": 2,
+                "color": "#6e5a88"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 9,
+                "w": 2,
+                "h": 7,
+                "color": "#4b3b5e"
+              },
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 16,
+                "w": 3,
+                "h": 1,
+                "color": "#e9e2c9"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 9,
+                "w": 2,
+                "h": 7,
+                "color": "#1a1222"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 16,
+                "w": 3,
+                "h": 1,
+                "color": "#e9e2c9"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 15,
+                "w": 2,
+                "h": 5,
+                "color": "#1a1222"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 15,
+                "w": 2,
+                "h": 5,
+                "color": "#1a1222"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "circle",
+                    "x": 5,
+                    "y": 5,
+                    "r": 1,
+                    "color": "#d1294a"
+                  },
+                  {
+                    "type": "circle",
+                    "x": 8,
+                    "y": 4.5,
+                    "r": 1.5,
+                    "color": "#d1294a"
+                  },
+                  {
+                    "type": "circle",
+                    "x": 11,
+                    "y": 5,
+                    "r": 1,
+                    "color": "#d1294a"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              8,
+              8
+            ],
+            "shoulder": [
+              8,
+              10
+            ],
+            "hip": [
+              8,
+              15
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 14,
+          "h": 16
+        },
+        "stats": {
+          "HP": 300,
+          "AD": 60,
+          "AP": 0,
+          "ARM": 40,
+          "MR": 30,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 0
+        },
+        "tags": [],
+        "behaviour": "walker",
+        "speed": 70,
+        "attack": {
+          "damageType": "physical",
+          "ratio": 1,
+          "attackTags": [
+            "PHYSICAL"
+          ],
+          "range": 20,
+          "cooldown": 1.2
+        }
+      },
+      {
+        "id": "eyeball-curse",
+        "name": "Floating Eyeball Curse",
+        "rig": {
+          "sizeClass": "small",
+          "parts": {
+            "head": [
+              {
+                "type": "circle",
+                "x": 8,
+                "y": 8,
+                "r": 6,
+                "color": "#efe9dc"
+              },
+              {
+                "type": "circle",
+                "x": 9,
+                "y": 8,
+                "r": 3,
+                "color": "#c4203f"
+              },
+              {
+                "type": "circle",
+                "x": 9,
+                "y": 8,
+                "r": 1.5,
+                "color": "#0b0a10"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 13,
+                "w": 4,
+                "h": 3,
+                "color": "#6b3f66"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 11,
+                "y": 11,
+                "w": 3,
+                "h": 2,
+                "color": "#6b3f66"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 2,
+                "y": 11,
+                "w": 3,
+                "h": 2,
+                "color": "#6b3f66"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 15,
+                "w": 1,
+                "h": 5,
+                "color": "#6b3f66"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 15,
+                "w": 1,
+                "h": 4,
+                "color": "#6b3f66"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 3,
+                    "y": 6,
+                    "w": 2,
+                    "h": 1,
+                    "color": "#a8324e"
+                  },
+                  {
+                    "type": "rect",
+                    "x": 4,
+                    "y": 10,
+                    "w": 2,
+                    "h": 1,
+                    "color": "#a8324e"
+                  },
+                  {
+                    "type": "rect",
+                    "x": 6,
+                    "y": 3,
+                    "w": 2,
+                    "h": 1,
+                    "color": "#a8324e"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              8,
+              13
+            ],
+            "shoulder": [
+              8,
+              12
+            ],
+            "hip": [
+              8,
+              15
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 12,
+          "h": 12
+        },
+        "stats": {
+          "HP": 200,
+          "AD": 0,
+          "AP": 80,
+          "ARM": 10,
+          "MR": 40,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 0
+        },
+        "tags": [],
+        "behaviour": "flyer",
+        "speed": 90,
+        "attack": {
+          "damageType": "magic",
+          "ratio": 1,
+          "attackTags": [
+            "ENERGY"
+          ],
+          "range": 160,
+          "cooldown": 1.8
+        }
+      },
+      {
+        "id": "finger-bearer",
+        "name": "Finger Bearer",
+        "rig": {
+          "sizeClass": "human",
+          "parts": {
+            "head": [
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 5,
+                "w": 10,
+                "h": 8,
+                "color": "#5b6b4e"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 9,
+                "w": 8,
+                "h": 3,
+                "color": "#9e1f39"
+              },
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 9,
+                "w": 1,
+                "h": 1,
+                "color": "#ddd5b6"
+              },
+              {
+                "type": "rect",
+                "x": 7,
+                "y": 9,
+                "w": 1,
+                "h": 1,
+                "color": "#ddd5b6"
+              },
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 9,
+                "w": 1,
+                "h": 1,
+                "color": "#ddd5b6"
+              },
+              {
+                "type": "rect",
+                "x": 11,
+                "y": 9,
+                "w": 1,
+                "h": 1,
+                "color": "#ddd5b6"
+              },
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 6,
+                "w": 2,
+                "h": 2,
+                "color": "#f0e45a"
+              },
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 6,
+                "w": 2,
+                "h": 2,
+                "color": "#f0e45a"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 12,
+                "w": 10,
+                "h": 11,
+                "color": "#5b6b4e"
+              },
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 14,
+                "w": 6,
+                "h": 6,
+                "color": "#3a4632"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 7,
+                "y": 13,
+                "w": 3,
+                "h": 12,
+                "color": "#5b6b4e"
+              },
+              {
+                "type": "rect",
+                "x": 7,
+                "y": 25,
+                "w": 1,
+                "h": 3,
+                "color": "#ddd5b6"
+              },
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 25,
+                "w": 1,
+                "h": 3,
+                "color": "#ddd5b6"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 13,
+                "w": 3,
+                "h": 12,
+                "color": "#3a4632"
+              },
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 25,
+                "w": 1,
+                "h": 3,
+                "color": "#ddd5b6"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 8,
+                "y": 23,
+                "w": 3,
+                "h": 9,
+                "color": "#5b6b4e"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 23,
+                "w": 3,
+                "h": 9,
+                "color": "#3a4632"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 4,
+                    "y": 1,
+                    "w": 2,
+                    "h": 4,
+                    "color": "#ddd5b6"
+                  },
+                  {
+                    "type": "rect",
+                    "x": 7,
+                    "y": 0,
+                    "w": 2,
+                    "h": 5,
+                    "color": "#ddd5b6"
+                  },
+                  {
+                    "type": "rect",
+                    "x": 10,
+                    "y": 2,
+                    "w": 2,
+                    "h": 3,
+                    "color": "#ddd5b6"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              8,
+              12
+            ],
+            "shoulder": [
+              8,
+              14
+            ],
+            "hip": [
+              8,
+              23
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 14,
+          "h": 30
+        },
+        "stats": {
+          "HP": 500,
+          "AD": 40,
+          "AP": 120,
+          "ARM": 60,
+          "MR": 80,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 20
+        },
+        "tags": [],
+        "behaviour": "shooter",
+        "speed": 40,
+        "attack": {
+          "damageType": "magic",
+          "ratio": 1.2,
+          "attackTags": [
+            "ENERGY"
+          ],
+          "range": 240,
+          "cooldown": 2.2
+        }
+      }
+    ],
+    "boss": {
+      "id": "sukuna-yuji",
+      "name": "Sukuna (in Yuji's body)",
+      "rig": {
+        "sizeClass": "human",
+        "parts": {
+          "head": [
+            {
+              "type": "rect",
+              "x": 4,
+              "y": 3,
+              "w": 8,
+              "h": 8,
+              "color": "#efc8a6"
+            },
+            {
+              "type": "rect",
+              "x": 5,
+              "y": 6,
+              "w": 2,
+              "h": 1,
+              "color": "#c8102e"
+            },
+            {
+              "type": "rect",
+              "x": 9,
+              "y": 6,
+              "w": 2,
+              "h": 1,
+              "color": "#c8102e"
+            },
+            {
+              "type": "rect",
+              "x": 5,
+              "y": 8,
+              "w": 2,
+              "h": 1,
+              "color": "#2b1215"
+            },
+            {
+              "type": "rect",
+              "x": 9,
+              "y": 8,
+              "w": 2,
+              "h": 1,
+              "color": "#2b1215"
+            },
+            {
+              "type": "rect",
+              "x": 7,
+              "y": 10,
+              "w": 2,
+              "h": 1,
+              "color": "#2b1215"
+            }
+          ],
+          "torso": [
+            {
+              "type": "rect",
+              "x": 4,
+              "y": 11,
+              "w": 8,
+              "h": 10,
+              "color": "#1d2033"
+            },
+            {
+              "type": "rect",
+              "x": 4,
+              "y": 11,
+              "w": 8,
+              "h": 2,
+              "color": "#b3202c"
+            },
+            {
+              "type": "rect",
+              "x": 5,
+              "y": 13,
+              "w": 1,
+              "h": 3,
+              "color": "#b3202c"
+            }
+          ],
+          "armFront": [
+            {
+              "type": "rect",
+              "x": 6,
+              "y": 12,
+              "w": 4,
+              "h": 9,
+              "color": "#1d2033"
+            },
+            {
+              "type": "rect",
+              "x": 6,
+              "y": 21,
+              "w": 4,
+              "h": 2,
+              "color": "#efc8a6"
+            },
+            {
+              "type": "rect",
+              "x": 6,
+              "y": 18,
+              "w": 4,
+              "h": 1,
+              "color": "#2b1215"
+            }
+          ],
+          "armBack": [
+            {
+              "type": "rect",
+              "x": 6,
+              "y": 12,
+              "w": 4,
+              "h": 9,
+              "color": "#1d2033"
+            },
+            {
+              "type": "rect",
+              "x": 6,
+              "y": 21,
+              "w": 4,
+              "h": 2,
+              "color": "#efc8a6"
+            }
+          ],
+          "legFront": [
+            {
+              "type": "rect",
+              "x": 8,
+              "y": 21,
+              "w": 3,
+              "h": 9,
+              "color": "#1d2033"
+            },
+            {
+              "type": "rect",
+              "x": 8,
+              "y": 30,
+              "w": 4,
+              "h": 2,
+              "color": "#0a0a0d"
+            }
+          ],
+          "legBack": [
+            {
+              "type": "rect",
+              "x": 5,
+              "y": 21,
+              "w": 3,
+              "h": 9,
+              "color": "#1d2033"
+            },
+            {
+              "type": "rect",
+              "x": 4,
+              "y": 30,
+              "w": 4,
+              "h": 2,
+              "color": "#0a0a0d"
+            }
+          ],
+          "extras": [
+            {
+              "attachTo": "head",
+              "shapes": [
+                {
+                  "type": "rect",
+                  "x": 4,
+                  "y": 1,
+                  "w": 8,
+                  "h": 3,
+                  "color": "#e58fa0"
+                },
+                {
+                  "type": "rect",
+                  "x": 3,
+                  "y": 0,
+                  "w": 2,
+                  "h": 3,
+                  "color": "#e58fa0"
+                },
+                {
+                  "type": "rect",
+                  "x": 7,
+                  "y": 0,
+                  "w": 2,
+                  "h": 2,
+                  "color": "#e58fa0"
+                },
+                {
+                  "type": "rect",
+                  "x": 11,
+                  "y": 0,
+                  "w": 2,
+                  "h": 3,
+                  "color": "#e58fa0"
+                },
+                {
+                  "type": "rect",
+                  "x": 3,
+                  "y": 3,
+                  "w": 1,
+                  "h": 2,
+                  "color": "#e58fa0"
+                },
+                {
+                  "type": "rect",
+                  "x": 12,
+                  "y": 3,
+                  "w": 1,
+                  "h": 2,
+                  "color": "#e58fa0"
+                }
+              ]
+            },
+            {
+              "attachTo": "head",
+              "shapes": [
+                {
+                  "type": "rect",
+                  "x": 4,
+                  "y": 7,
+                  "w": 1,
+                  "h": 3,
+                  "color": "#2b1215"
+                },
+                {
+                  "type": "rect",
+                  "x": 11,
+                  "y": 7,
+                  "w": 1,
+                  "h": 3,
+                  "color": "#2b1215"
+                },
+                {
+                  "type": "rect",
+                  "x": 6,
+                  "y": 4,
+                  "w": 4,
+                  "h": 1,
+                  "color": "#2b1215"
+                }
+              ]
+            }
+          ]
+        },
+        "pivots": {
+          "neck": [
+            8,
+            11
+          ],
+          "shoulder": [
+            8,
+            13
+          ],
+          "hip": [
+            8,
+            21
+          ]
+        }
+      },
+      "collisionBox": {
+        "w": 12,
+        "h": 30
+      },
+      "stats": {
+        "HP": 15000,
+        "AD": 2000,
+        "AP": 3000,
+        "ARM": 1000,
+        "MR": 1500,
+        "ARM_PEN": 200,
+        "MAGIC_PEN": 300
+      },
+      "tags": [
+        "REGENERATION"
+      ],
+      "behaviour": "walker",
+      "speed": 150,
+      "attack": {
+        "damageType": "mixed",
+        "ratio": 1.5,
+        "attackTags": [
+          "ENERGY"
+        ],
+        "range": 120,
+        "cooldown": 1.5
+      },
+      "pattern": [
+        "charge",
+        "shoot",
+        "jump"
+      ],
+      "phaseAt": 0.4
+    },
+    "rooms": [
+      {
+        "id": "school-grounds",
+        "name": "Sugisawa High School Grounds",
+        "objective": "Cross the school grounds and get inside",
+        "layout": [
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          ".........................................2............................",
+          "......................................................................",
+          "..................................................1...........===.....",
+          ".......=====..................====..............=====......##.........",
+          "........................##.................................##.........",
+          "..S...........1.........##..^^......C...................3..##......E..",
+          "##################...#######################...#######################",
+          "##################...#######################...#######################"
+        ],
+        "isBossRoom": false,
+        "exit": {
+          "toRoom": "haunted-corridors"
+        }
+      },
+      {
+        "id": "haunted-corridors",
+        "name": "Haunted Corridors",
+        "objective": "Follow the cursed energy up to the roof",
+        "layout": [
+          "########################################################################",
+          "........................................................................",
+          "........................................................................",
+          "........................................................................",
+          "........................................................2...............",
+          "........................................................................",
+          ".........................2.............................====.............",
+          "........................................................................",
+          "........................................................................",
+          ".......................======.....................====..................",
+          "..............#..................###.........................##.........",
+          "..S.......1...##..............^^.###..C....3.................##.1....E..",
+          "###################...########################..#######...##############",
+          "###################...########################..#######...##############"
+        ],
+        "isBossRoom": false,
+        "exit": {
+          "toRoom": "the-rooftop"
+        }
+      },
+      {
+        "id": "the-rooftop",
+        "name": "The Rooftop",
+        "objective": "Defeat Sukuna",
+        "layout": [
+          "............................................",
+          "............................................",
+          "............................................",
+          "............................................",
+          "............................................",
+          "............................................",
+          "............................................",
+          "............................................",
+          "...........................====.............",
+          ".............====...........................",
+          "............................................",
+          "..S.....##.............^^........#.....B....",
+          "##################..########################",
+          "##################..########################"
+        ],
+        "isBossRoom": true,
+        "exit": {
+          "toRoom": "END"
+        }
+      }
+    ],
+    "dialogue": {
+      "roomIntro": [
+        [
+          {
+            "speaker": "Gojo",
+            "text": "A special grade cursed object loose at a high school at night. Sure, why not."
+          },
+          {
+            "speaker": "Gojo",
+            "text": "Low-grade curses crawling everywhere. Relax, the strongest just showed up."
+          }
+        ],
+        [
+          {
+            "speaker": "Gojo",
+            "text": "These halls reek of cursed energy. Somebody swallowed something they really shouldn't have."
+          },
+          {
+            "speaker": "Gojo",
+            "text": "Mind the floor. Curses love a building nobody's watching."
+          }
+        ],
+        [
+          {
+            "speaker": "Gojo",
+            "text": "Up on the roof? Let's see who's really in charge of that body."
+          }
+        ]
+      ],
+      "bossIntro": [
+        {
+          "speaker": "Sukuna",
+          "text": "So you're this era's strongest. Entertain me before the brat takes his body back."
+        },
+        {
+          "speaker": "Gojo",
+          "text": "Ten seconds. If Yuji's still in there, he can come back after."
+        }
+      ],
+      "bossDefeated": [
+        {
+          "speaker": "Sukuna",
+          "text": "Tch. Enjoy it while it lasts, sorcerer."
+        },
+        {
+          "speaker": "Gojo",
+          "text": "Welcome back, Yuji. You're going to need a lot of training."
+        }
+      ],
+      "playerDefeated": [
+        {
+          "speaker": "Sukuna",
+          "text": "The strongest? Don't make me laugh. Come back with a real technique."
+        }
+      ]
+    }
+  },
+  "notes": {
+    "sourceFacts": [
+      "Yuji Itadori is a student at Sugisawa Third High School in Sendai.",
+      "Yuji swallows one of Ryomen Sukuna's fingers, a special grade cursed object, to fight off curses at his school at night.",
+      "Sukuna takes over Yuji's body; Gojo arrives and briefly fights Sukuna before Yuji regains control.",
+      "Gojo's technique is Limitless: Infinity stops attacks before they touch him; Blue pulls, Red repels, Hollow Purple combines both.",
+      "Gojo wears a black blindfold over his Six Eyes, has white hair and a dark high-collar jujutsu uniform.",
+      "When Sukuna takes over, extra eyes and black markings appear on Yuji's face."
+    ],
+    "designChoices": [
+      "Gojo is played in his iconic form; Hollow Purple and teleport are shown later than episodes 1-2.",
+      "The three rooms (school grounds, corridors, rooftop) and the rooftop showdown are invented for the game.",
+      "Enemies are generic low-grade curses (crawler, floating eyeball, finger bearer), not specific named curses from episodes 1-2.",
+      "Sukuna is the boss; his attacks are mixed damage with ENERGY tags, so Gojo's Infinity makes him immune to them.",
+      "Sukuna gets REGENERATION to reflect his reverse cursed technique.",
+      "Every room is passable without abilities by the weakest demo character (Peppa), so any character can visit this world."
+    ]
+  },
+  "createdAt": "2026-11-21T12:00:00.000Z"
+}

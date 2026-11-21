@@ -1,0 +1,1209 @@
+{
+  "id": "dragon-ball-ep1-goku",
+  "schemaVersion": 1,
+  "status": "ready",
+  "source": {
+    "title": "Dragon Ball",
+    "medium": "anime",
+    "versionOrEpisode": "Episode 1: The Secret of the Dragon Balls",
+    "requestedCharacter": "Goku"
+  },
+  "character": {
+    "id": "goku",
+    "name": "Goku",
+    "source": "Dragon Ball",
+    "versionOrEpisode": "Iconic (Kamehameha, Nimbus, Power Pole)",
+    "assumptions": [
+      "Uses the iconic adult Goku (Kamehameha, Flying Nimbus, Power Pole), not the episode-1 kid Goku.",
+      "Planet-level on the reference scale: iconic Goku fights at planet-busting levels (Frieza-era and beyond), so he is the planet-level anchor.",
+      "Stats are exactly the planet-level anchor (HP 10000, AD 1000, AP 1000, ARM 800, MR 800).",
+      "Martial-arts hits are physical (AD); ki attacks (Ki Blast, Kamehameha) are magic damage with the ENERGY tag (AP).",
+      "Small flat penetration (100) reflects his training to strike through guards and ki defences.",
+      "Flight comes from the Flying Nimbus ability rather than innate flight, so canFly is false and he has no FLIGHT tag.",
+      "The Power Pole is a visual/flavour reference only; the engine has no extending-staff mechanic."
+    ],
+    "rig": {
+      "sizeClass": "human",
+      "parts": {
+        "head": [
+          {
+            "type": "circle",
+            "x": 8,
+            "y": 7,
+            "r": 4,
+            "color": "#f5c99b"
+          },
+          {
+            "type": "rect",
+            "x": 9,
+            "y": 6,
+            "w": 1,
+            "h": 2,
+            "color": "#141414"
+          }
+        ],
+        "torso": [
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 11,
+            "w": 8,
+            "h": 9,
+            "color": "#f07a1a"
+          },
+          {
+            "type": "rect",
+            "x": 7,
+            "y": 11,
+            "w": 2,
+            "h": 3,
+            "color": "#1f4fbf"
+          },
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 18,
+            "w": 8,
+            "h": 2,
+            "color": "#1f4fbf"
+          }
+        ],
+        "armFront": [
+          {
+            "type": "rect",
+            "x": 8,
+            "y": 12,
+            "w": 3,
+            "h": 6,
+            "color": "#f5c99b"
+          },
+          {
+            "type": "rect",
+            "x": 8,
+            "y": 18,
+            "w": 3,
+            "h": 2,
+            "color": "#1f4fbf"
+          },
+          {
+            "type": "rect",
+            "x": 8,
+            "y": 20,
+            "w": 3,
+            "h": 2,
+            "color": "#f5c99b"
+          }
+        ],
+        "armBack": [
+          {
+            "type": "rect",
+            "x": 5,
+            "y": 12,
+            "w": 3,
+            "h": 6,
+            "color": "#f5c99b"
+          },
+          {
+            "type": "rect",
+            "x": 5,
+            "y": 18,
+            "w": 3,
+            "h": 2,
+            "color": "#1f4fbf"
+          },
+          {
+            "type": "rect",
+            "x": 5,
+            "y": 20,
+            "w": 3,
+            "h": 2,
+            "color": "#f5c99b"
+          }
+        ],
+        "legFront": [
+          {
+            "type": "rect",
+            "x": 8,
+            "y": 20,
+            "w": 3,
+            "h": 8,
+            "color": "#f07a1a"
+          },
+          {
+            "type": "rect",
+            "x": 8,
+            "y": 28,
+            "w": 4,
+            "h": 4,
+            "color": "#14235c"
+          }
+        ],
+        "legBack": [
+          {
+            "type": "rect",
+            "x": 5,
+            "y": 20,
+            "w": 3,
+            "h": 8,
+            "color": "#f07a1a"
+          },
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 28,
+            "w": 4,
+            "h": 4,
+            "color": "#14235c"
+          }
+        ],
+        "extras": [
+          {
+            "attachTo": "head",
+            "shapes": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 2,
+                "w": 8,
+                "h": 3,
+                "color": "#141414"
+              },
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 4,
+                "w": 2,
+                "h": 4,
+                "color": "#141414"
+              },
+              {
+                "type": "rect",
+                "x": 1,
+                "y": 3,
+                "w": 3,
+                "h": 2,
+                "color": "#141414"
+              },
+              {
+                "type": "rect",
+                "x": 0,
+                "y": 1,
+                "w": 2,
+                "h": 2,
+                "color": "#141414"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 0,
+                "w": 2,
+                "h": 2,
+                "color": "#141414"
+              },
+              {
+                "type": "rect",
+                "x": 7,
+                "y": 0,
+                "w": 2,
+                "h": 2,
+                "color": "#141414"
+              },
+              {
+                "type": "rect",
+                "x": 10,
+                "y": 0,
+                "w": 2,
+                "h": 2,
+                "color": "#141414"
+              },
+              {
+                "type": "rect",
+                "x": 11,
+                "y": 3,
+                "w": 3,
+                "h": 2,
+                "color": "#141414"
+              }
+            ]
+          }
+        ]
+      },
+      "pivots": {
+        "neck": [
+          8,
+          11
+        ],
+        "shoulder": [
+          8,
+          13
+        ],
+        "hip": [
+          8,
+          20
+        ]
+      }
+    },
+    "collisionBox": {
+      "w": 12,
+      "h": 30
+    },
+    "movement": {
+      "speed": 220,
+      "jumpStrength": 520,
+      "canFly": false
+    },
+    "stats": {
+      "HP": 10000,
+      "AD": 1000,
+      "AP": 1000,
+      "ARM": 800,
+      "MR": 800,
+      "ARM_PEN": 100,
+      "MAGIC_PEN": 100
+    },
+    "tags": [],
+    "abilities": [
+      {
+        "id": "punch",
+        "name": "Punch",
+        "slot": 1,
+        "mechanic": "melee",
+        "damageType": "physical",
+        "attackTags": [
+          "PHYSICAL"
+        ],
+        "ratio": 1,
+        "range": 24,
+        "cooldown": 0.3,
+        "duration": 0,
+        "knockback": 200,
+        "animation": "punch"
+      },
+      {
+        "id": "ki-blast",
+        "name": "Ki Blast",
+        "slot": 2,
+        "mechanic": "projectile",
+        "damageType": "magic",
+        "attackTags": [
+          "ENERGY"
+        ],
+        "ratio": 1.2,
+        "range": 300,
+        "cooldown": 0.6,
+        "duration": 0,
+        "projectileSpeed": 500,
+        "knockback": 150,
+        "animation": "cast"
+      },
+      {
+        "id": "flying-nimbus",
+        "name": "Flying Nimbus",
+        "slot": 3,
+        "mechanic": "flight",
+        "damageType": "physical",
+        "attackTags": [],
+        "ratio": 0,
+        "range": 0,
+        "cooldown": 6,
+        "duration": 4,
+        "knockback": 0,
+        "animation": "cast"
+      },
+      {
+        "id": "kamehameha",
+        "name": "Kamehameha",
+        "slot": 4,
+        "mechanic": "beam",
+        "damageType": "magic",
+        "attackTags": [
+          "ENERGY"
+        ],
+        "ratio": 4,
+        "range": 380,
+        "cooldown": 8,
+        "duration": 0.6,
+        "knockback": 600,
+        "animation": "beam"
+      }
+    ]
+  },
+  "world": {
+    "id": "dragon-ball-ep1",
+    "name": "Dragon Ball: The Secret of the Dragon Balls",
+    "source": "Dragon Ball",
+    "visualStyle": {
+      "palette": {
+        "sky": "#5bb8f5",
+        "skyBottom": "#d6f0ff",
+        "ground": "#3f8f3a",
+        "groundTop": "#6cc24a",
+        "platform": "#8b5a2b",
+        "accent": "#ff8c1a"
+      },
+      "backdrop": "mountains"
+    },
+    "enemies": [
+      {
+        "id": "mountain-wolf",
+        "name": "Mountain Wolf",
+        "rig": {
+          "sizeClass": "small",
+          "parts": {
+            "head": [
+              {
+                "type": "circle",
+                "x": 13,
+                "y": 9,
+                "r": 3,
+                "color": "#7a7a85"
+              },
+              {
+                "type": "rect",
+                "x": 14,
+                "y": 10,
+                "w": 2,
+                "h": 2,
+                "color": "#4a4a55"
+              },
+              {
+                "type": "rect",
+                "x": 13,
+                "y": 8,
+                "w": 1,
+                "h": 1,
+                "color": "#e8d23a"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 2,
+                "y": 9,
+                "w": 11,
+                "h": 5,
+                "color": "#7a7a85"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 12,
+                "w": 7,
+                "h": 2,
+                "color": "#c9c9cf"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 11,
+                "y": 13,
+                "w": 2,
+                "h": 6,
+                "color": "#7a7a85"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 9,
+                "y": 13,
+                "w": 2,
+                "h": 6,
+                "color": "#4a4a55"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 13,
+                "w": 2,
+                "h": 6,
+                "color": "#7a7a85"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 2,
+                "y": 13,
+                "w": 2,
+                "h": 6,
+                "color": "#4a4a55"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 11,
+                    "y": 5,
+                    "w": 2,
+                    "h": 2,
+                    "color": "#4a4a55"
+                  },
+                  {
+                    "type": "rect",
+                    "x": 14,
+                    "y": 5,
+                    "w": 1,
+                    "h": 2,
+                    "color": "#4a4a55"
+                  }
+                ]
+              },
+              {
+                "attachTo": "torso",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 0,
+                    "y": 8,
+                    "w": 3,
+                    "h": 2,
+                    "color": "#4a4a55"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              12,
+              10
+            ],
+            "shoulder": [
+              11,
+              13
+            ],
+            "hip": [
+              4,
+              13
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 14,
+          "h": 12
+        },
+        "stats": {
+          "HP": 60,
+          "AD": 15,
+          "AP": 0,
+          "ARM": 5,
+          "MR": 0,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 0
+        },
+        "tags": [],
+        "behaviour": "walker",
+        "speed": 120,
+        "attack": {
+          "damageType": "physical",
+          "ratio": 1,
+          "attackTags": [
+            "PHYSICAL"
+          ],
+          "range": 18,
+          "cooldown": 1
+        }
+      },
+      {
+        "id": "pterodactyl",
+        "name": "Pterodactyl",
+        "rig": {
+          "sizeClass": "small",
+          "parts": {
+            "head": [
+              {
+                "type": "circle",
+                "x": 12,
+                "y": 6,
+                "r": 2,
+                "color": "#b5651d"
+              },
+              {
+                "type": "rect",
+                "x": 13,
+                "y": 6,
+                "w": 3,
+                "h": 1,
+                "color": "#e8c070"
+              },
+              {
+                "type": "rect",
+                "x": 12,
+                "y": 5,
+                "w": 1,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 7,
+                "w": 6,
+                "h": 4,
+                "color": "#b5651d"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 8,
+                "y": 7,
+                "w": 8,
+                "h": 2,
+                "color": "#7a3f12"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 0,
+                "y": 7,
+                "w": 8,
+                "h": 2,
+                "color": "#7a3f12"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 8,
+                "y": 11,
+                "w": 1,
+                "h": 3,
+                "color": "#e8c070"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 11,
+                "w": 1,
+                "h": 3,
+                "color": "#e8c070"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 9,
+                    "y": 3,
+                    "w": 3,
+                    "h": 2,
+                    "color": "#7a3f12"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              11,
+              7
+            ],
+            "shoulder": [
+              8,
+              8
+            ],
+            "hip": [
+              7,
+              11
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 14,
+          "h": 10
+        },
+        "stats": {
+          "HP": 50,
+          "AD": 12,
+          "AP": 0,
+          "ARM": 3,
+          "MR": 0,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 0
+        },
+        "tags": [],
+        "behaviour": "flyer",
+        "speed": 100,
+        "attack": {
+          "damageType": "physical",
+          "ratio": 1,
+          "attackTags": [
+            "PHYSICAL"
+          ],
+          "range": 16,
+          "cooldown": 1.2
+        }
+      },
+      {
+        "id": "sabre-tooth-tiger",
+        "name": "Sabre-tooth Tiger",
+        "rig": {
+          "sizeClass": "small",
+          "parts": {
+            "head": [
+              {
+                "type": "circle",
+                "x": 12,
+                "y": 9,
+                "r": 3,
+                "color": "#e08a2a"
+              },
+              {
+                "type": "rect",
+                "x": 12,
+                "y": 11,
+                "w": 1,
+                "h": 3,
+                "color": "#f4f0e0"
+              },
+              {
+                "type": "rect",
+                "x": 14,
+                "y": 11,
+                "w": 1,
+                "h": 3,
+                "color": "#f4f0e0"
+              },
+              {
+                "type": "rect",
+                "x": 13,
+                "y": 8,
+                "w": 1,
+                "h": 1,
+                "color": "#3a2410"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 1,
+                "y": 9,
+                "w": 11,
+                "h": 5,
+                "color": "#e08a2a"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 9,
+                "w": 1,
+                "h": 4,
+                "color": "#3a2410"
+              },
+              {
+                "type": "rect",
+                "x": 7,
+                "y": 9,
+                "w": 1,
+                "h": 4,
+                "color": "#3a2410"
+              },
+              {
+                "type": "rect",
+                "x": 10,
+                "y": 9,
+                "w": 1,
+                "h": 3,
+                "color": "#3a2410"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 10,
+                "y": 13,
+                "w": 2,
+                "h": 6,
+                "color": "#e08a2a"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 8,
+                "y": 13,
+                "w": 2,
+                "h": 6,
+                "color": "#3a2410"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 13,
+                "w": 2,
+                "h": 6,
+                "color": "#e08a2a"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 1,
+                "y": 13,
+                "w": 2,
+                "h": 6,
+                "color": "#3a2410"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 10,
+                    "y": 5,
+                    "w": 2,
+                    "h": 2,
+                    "color": "#e08a2a"
+                  },
+                  {
+                    "type": "rect",
+                    "x": 13,
+                    "y": 5,
+                    "w": 2,
+                    "h": 2,
+                    "color": "#e08a2a"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              11,
+              10
+            ],
+            "shoulder": [
+              10,
+              13
+            ],
+            "hip": [
+              3,
+              13
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 14,
+          "h": 12
+        },
+        "stats": {
+          "HP": 120,
+          "AD": 30,
+          "AP": 0,
+          "ARM": 10,
+          "MR": 0,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 0
+        },
+        "tags": [],
+        "behaviour": "jumper",
+        "speed": 140,
+        "attack": {
+          "damageType": "physical",
+          "ratio": 1.2,
+          "attackTags": [
+            "PHYSICAL"
+          ],
+          "range": 20,
+          "cooldown": 1.1
+        }
+      }
+    ],
+    "boss": {
+      "id": "bear-thief",
+      "name": "Bear Thief",
+      "rig": {
+        "sizeClass": "large",
+        "parts": {
+          "head": [
+            {
+              "type": "circle",
+              "x": 24,
+              "y": 12,
+              "r": 8,
+              "color": "#7a4a25"
+            },
+            {
+              "type": "circle",
+              "x": 29,
+              "y": 14,
+              "r": 4,
+              "color": "#d9b58a"
+            },
+            {
+              "type": "circle",
+              "x": 32,
+              "y": 13,
+              "r": 1.5,
+              "color": "#141414"
+            },
+            {
+              "type": "rect",
+              "x": 27,
+              "y": 9,
+              "w": 2,
+              "h": 2,
+              "color": "#141414"
+            }
+          ],
+          "torso": [
+            {
+              "type": "rect",
+              "x": 14,
+              "y": 19,
+              "w": 20,
+              "h": 15,
+              "color": "#7a4a25"
+            },
+            {
+              "type": "rect",
+              "x": 18,
+              "y": 22,
+              "w": 12,
+              "h": 10,
+              "color": "#d9b58a"
+            }
+          ],
+          "armFront": [
+            {
+              "type": "rect",
+              "x": 22,
+              "y": 21,
+              "w": 6,
+              "h": 13,
+              "color": "#7a4a25"
+            },
+            {
+              "type": "circle",
+              "x": 25,
+              "y": 35,
+              "r": 3,
+              "color": "#4e2e15"
+            }
+          ],
+          "armBack": [
+            {
+              "type": "rect",
+              "x": 17,
+              "y": 21,
+              "w": 6,
+              "h": 13,
+              "color": "#4e2e15"
+            },
+            {
+              "type": "circle",
+              "x": 20,
+              "y": 35,
+              "r": 3,
+              "color": "#4e2e15"
+            }
+          ],
+          "legFront": [
+            {
+              "type": "rect",
+              "x": 25,
+              "y": 34,
+              "w": 7,
+              "h": 10,
+              "color": "#7a4a25"
+            },
+            {
+              "type": "rect",
+              "x": 25,
+              "y": 44,
+              "w": 9,
+              "h": 4,
+              "color": "#4e2e15"
+            }
+          ],
+          "legBack": [
+            {
+              "type": "rect",
+              "x": 16,
+              "y": 34,
+              "w": 7,
+              "h": 10,
+              "color": "#4e2e15"
+            },
+            {
+              "type": "rect",
+              "x": 14,
+              "y": 44,
+              "w": 9,
+              "h": 4,
+              "color": "#4e2e15"
+            }
+          ],
+          "extras": [
+            {
+              "attachTo": "head",
+              "shapes": [
+                {
+                  "type": "circle",
+                  "x": 18,
+                  "y": 5,
+                  "r": 3,
+                  "color": "#7a4a25"
+                },
+                {
+                  "type": "circle",
+                  "x": 30,
+                  "y": 5,
+                  "r": 3,
+                  "color": "#7a4a25"
+                }
+              ]
+            },
+            {
+              "attachTo": "armFront",
+              "shapes": [
+                {
+                  "type": "rect",
+                  "x": 34,
+                  "y": 10,
+                  "w": 3,
+                  "h": 23,
+                  "color": "#c8c8d0"
+                },
+                {
+                  "type": "rect",
+                  "x": 31,
+                  "y": 33,
+                  "w": 9,
+                  "h": 2,
+                  "color": "#4e2e15"
+                },
+                {
+                  "type": "rect",
+                  "x": 34,
+                  "y": 35,
+                  "w": 3,
+                  "h": 3,
+                  "color": "#4e2e15"
+                }
+              ]
+            }
+          ]
+        },
+        "pivots": {
+          "neck": [
+            24,
+            19
+          ],
+          "shoulder": [
+            24,
+            21
+          ],
+          "hip": [
+            24,
+            34
+          ]
+        }
+      },
+      "collisionBox": {
+        "w": 36,
+        "h": 44
+      },
+      "stats": {
+        "HP": 600,
+        "AD": 80,
+        "AP": 0,
+        "ARM": 40,
+        "MR": 10,
+        "ARM_PEN": 0,
+        "MAGIC_PEN": 0
+      },
+      "tags": [],
+      "behaviour": "walker",
+      "speed": 110,
+      "attack": {
+        "damageType": "physical",
+        "ratio": 1.5,
+        "attackTags": [
+          "PHYSICAL"
+        ],
+        "range": 40,
+        "cooldown": 1.5
+      },
+      "pattern": [
+        "charge",
+        "jump"
+      ],
+      "phaseAt": 0.4
+    },
+    "rooms": [
+      {
+        "id": "mount-paozu",
+        "name": "Mount Paozu",
+        "objective": "Head down the mountain to the forest",
+        "isBossRoom": false,
+        "exit": {
+          "toRoom": "the-forest"
+        },
+        "layout": [
+          "........................................................................",
+          "........................................................................",
+          "........................................................................",
+          "........................................................................",
+          "..................................................2.....................",
+          "........................................................................",
+          ".....................................................=====..............",
+          "........................................................................",
+          "........................................................................",
+          "......................======......###..........======...................",
+          ".............##...................###...................................",
+          "..S......##..##...............1...###...C...^^..................1....E..",
+          "#################...######################################...###########",
+          "#################...######################################...###########"
+        ]
+      },
+      {
+        "id": "the-forest",
+        "name": "The Forest",
+        "objective": "Track the thief through the forest",
+        "isBossRoom": false,
+        "exit": {
+          "toRoom": "bear-thiefs-clearing"
+        },
+        "layout": [
+          "............................................................................",
+          "............................................................................",
+          "............................................................................",
+          ".........................................................2..................",
+          "............................................................................",
+          "............................................................................",
+          ".......................................................=====................",
+          "............................................................................",
+          "..........................======............................................",
+          "........=====...................................======........##............",
+          "......................##......................................##............",
+          "..S...........1.......##.........3..^^..C................^^...##....3....E..",
+          "#################...#######################...##############################",
+          "#################...#######################...##############################"
+        ]
+      },
+      {
+        "id": "bear-thiefs-clearing",
+        "name": "Bear Thief's Clearing",
+        "objective": "Defeat the Bear Thief",
+        "isBossRoom": true,
+        "exit": {
+          "toRoom": "END"
+        },
+        "layout": [
+          "..............................................",
+          "..............................................",
+          "..............................................",
+          "..............................................",
+          "..............................................",
+          "..............................................",
+          "................=====.........................",
+          "...............................====...........",
+          "..............................................",
+          ".........=====..........=====.................",
+          "..............................................",
+          "..S..................^^.................B.....",
+          "##############################################",
+          "##############################################"
+        ]
+      }
+    ],
+    "dialogue": {
+      "roomIntro": [
+        [
+          {
+            "speaker": "Goku",
+            "text": "Grandpa's Dragon Ball is safe and sound. Time to go catch some dinner!"
+          },
+          {
+            "speaker": "Goku",
+            "text": "Wolves up here are hungry too. Stay sharp."
+          }
+        ],
+        [
+          {
+            "speaker": "Goku",
+            "text": "Somebody big came through here. Those footprints have claws!"
+          },
+          {
+            "speaker": "Goku",
+            "text": "Ooh, a sabre-tooth. This could be a good warm-up."
+          }
+        ],
+        [
+          {
+            "speaker": "Goku",
+            "text": "Found you! Give back what you stole, mister bear."
+          }
+        ]
+      ],
+      "bossIntro": [
+        {
+          "speaker": "Bear Thief",
+          "text": "This is my forest, kid. Turn around or I'll make you my lunch!"
+        },
+        {
+          "speaker": "Goku",
+          "text": "Wow, you're huge! Bet you're strong. Let's fight!"
+        }
+      ],
+      "bossDefeated": [
+        {
+          "speaker": "Bear Thief",
+          "text": "Ugh... the brat hits like a mountain falling on me..."
+        },
+        {
+          "speaker": "Goku",
+          "text": "That was fun! Now, anyone know where I can find dinner?"
+        }
+      ],
+      "playerDefeated": [
+        {
+          "speaker": "Bear Thief",
+          "text": "Hah! Back to the mountains with you, little one."
+        },
+        {
+          "speaker": "Goku",
+          "text": "Okay, okay... I just need to train a bit more!"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "sourceFacts": [
+      "Dragon Ball episode 1 is 'The Secret of the Dragon Balls'; Goku lives alone on Mount Paozu.",
+      "Goku keeps his late grandfather Gohan's four-star Dragon Ball.",
+      "Goku is known for the Kamehameha, the Flying Nimbus cloud and the Power Pole (Nyoibo).",
+      "Goku wears an orange gi with a blue belt, blue wristbands and dark boots, with spiky black hair.",
+      "Pterodactyls and other giant prehistoric animals appear in Goku's wilderness in the early episodes."
+    ],
+    "designChoices": [
+      "The playable Goku is the iconic adult version, not the child Goku of episode 1.",
+      "The Bear Thief (a sword-wielding bear bandit) appears in the early episodes; making him the boss of this episode-1 world is a design choice.",
+      "Room order Mount Paozu -> The Forest -> Bear Thief's Clearing is invented for the game.",
+      "Wolves, a pterodactyl and a sabre-tooth tiger are the regular enemies, placed at animal/ordinary-adult tier on the reference scale.",
+      "Kamehameha and Ki Blast deal magic (ki) damage with the ENERGY tag; punches deal physical damage.",
+      "Every room is laid out so even a toddler-tier character can walk and jump to the exit without abilities."
+    ]
+  },
+  "createdAt": "2026-11-21T12:00:00.000Z"
+}

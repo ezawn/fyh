@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Engine Dev</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #111; color: #ccc; font-family: monospace; }
+      #game { width: 100vw; height: calc(100vh - 20px); }
+    </style>
+  </head>
+  <body>
+    <div id="status">engine dev page: test room</div>
+    <div id="game"></div>
+    <script type="module">
+      import { startGame } from "./index.ts";
+      import { TEST_SESSION } from "./testRoom.ts";
+      const parent = document.getElementById("game");
+      const status = document.getElementById("status");
+      let handle;
+      const run = () => {
+        handle = startGame(parent, TEST_SESSION, (r) => {
+          status.textContent = "onExit: " + JSON.stringify(r) + " (restarting in 1s)";
+          setTimeout(() => { handle.destroy(); run(); }, 1000);
+        });
+      };
+      run();
+    </script>
+  </body>
+</html>

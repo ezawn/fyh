@@ -1,27 +1,63 @@
 /**
  * ENGINE LANE owns src/engine/.
  * Public API the UI calls. Keep this signature stable (docs/LANES.md).
- *
- * STUB: replace with the real Phaser game.
  */
-import type { SessionResponse } from "../shared/api";
+import Phaser from "phaser";
+import { GameScene, VIEW_H, VIEW_W } from "./core/GameScene";
+import type { Session } from "./session";
+
+export type { Session } from "./session";
 
 export type GameResult = { outcome: "won" | "died" | "quit" };
+
 export type GameHandle = { destroy(): void };
 
-export function startGame(parent: HTMLElement, session: SessionResponse, onExit: (r: GameResult) => void): GameHandle {
-  const box = document.createElement("div");
-  box.style.cssText = "padding:24px;font-family:monospace;color:#fff;background:#000;";
-  box.textContent = `ENGINE STUB: ${session.character.name} in ${session.world.name}. Press Esc to exit.`;
-  parent.appendChild(box);
-  const onKey = (e: KeyboardEvent) => {
-    if (e.key === "Escape") onExit({ outcome: "quit" });
+/**
+ * Mechanics the engine actually implements right now (SPEC §9). The UI must
+ * show any ability whose mechanic is not in this list as "not supported".
+ */
+export const SUPPORTED_MECHANICS: readonly string[] = [];
+
+/**
+ * Mount the game for a session (POST /api/session response) inside `parent`.
+ * `onExit` fires once: boss defeated ("won"), player gave up after dying
+ * ("died") or Esc ("quit").
+ */
+export function startGame(parent: HTMLElement, session: Session, onExit: (result: GameResult) => void): GameHandle {
+  let exited = false;
+  const exit = (r: GameResult) => {
+    if (exited) return;
+    exited = true;
+    onExit(r);
   };
-  window.addEventListener("keydown", onKey);
+
+  const game = new Phaser.Game({
+    type: Phaser.AUTO,
+    parent,
+    width: VIEW_W,
+    height: VIEW_H,
+    pixelArt: true,
+    backgroundColor: "#000000",
+    physics: { default: "arcade", arcade: { gravity: { x: 0, y: 0 }, debug: false } },
+    scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.CENTER_BOTH },
+  });
+
+  // Integer scaling: largest whole-number zoom that fits the parent.
+  const fit = () => {
+    const w = parent.clientWidth || window.innerWidth;
+    const h = parent.clientHeight || window.innerHeight;
+    game.scale.setZoom(Math.max(1, Math.floor(Math.min(w / VIEW_W, h / VIEW_H))));
+  };
+  window.addEventListener("resize", fit);
+  game.events.once(Phaser.Core.Events.READY, () => {
+    fit();
+    game.scene.add("game", GameScene, true, { session, roomIndex: 0, onExit: exit });
+  });
+
   return {
     destroy() {
-      window.removeEventListener("keydown", onKey);
-      box.remove();
+      window.removeEventListener("resize", fit);
+      game.destroy(true);
     },
   };
 }
