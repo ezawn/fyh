@@ -7,7 +7,7 @@
 
 ## 1. The product in one paragraph
 
-A web app that turns a film, TV episode or anime into a short, playable retro platformer "cartridge". Each cartridge contains **one playable protagonist** and **one world** (3 rooms, the last with a boss). Characters and worlds are independent: like Terraria, you pick a character on a **character select screen** and a world on a **world select screen**, and play that combination. Characters keep their canonical strength. Superman one-shots Peppa Pig's world; Peppa gets one-shot in Dragon Ball's. The fight is never rebalanced and the mission never changes. The only adaptation is **AI-written flavour dialogue** that reacts to the matchup.
+A web app that turns a film, TV episode or anime into a short, playable retro platformer "cartridge". Each cartridge contains **one playable protagonist** and **one world** (3 rooms, the last with a boss). Characters and worlds are independent: like Terraria, you pick a character on a **character select screen** and a world on a **world select screen**, and play that combination. Characters keep their canonical strength. Goku one-shots Peppa Pig's world; Peppa gets one-shot in Dragon Ball's. The fight is never rebalanced and the mission never changes. The only adaptation is **AI-written flavour dialogue** that reacts to the matchup.
 
 **Central demo:** pick Goku, enter Peppa Pig's world, and one-shot George. Pick Peppa, enter Dragon Ball's world, and get flattened. Pick Goku, fight Gojo's world, and watch his attacks hit Infinity and show `IMMUNE`.
 
