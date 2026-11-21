@@ -64,6 +64,9 @@ class GeminiUnavailable extends Error {
 /** Models whose daily free-tier quota ran out in this process, with when to try them again. */
 const exhausted = new Map<string, number>();
 
+/** How long to wait for a Gemini model to start answering before trying the next one. */
+const FIRST_BYTE_MS = Number(process.env.GEMINI_FIRST_BYTE_MS ?? 30_000);
+
 /**
  * One Gemini call constrained by a JSON schema; returns the parsed object.
  * GEMINI_MODEL may list several models ("a,b,c"): the free tier allows only about 20
@@ -83,6 +86,7 @@ export async function geminiComplete<T = unknown>(prompt: string, jsonSchema: un
       if (!(err instanceof GeminiUnavailable)) throw err;
       if (err.untilMs) exhausted.set(model, err.untilMs);
       errors.push(`${model}: ${err.message}`);
+      console.warn(`[ai] ${model}: ${err.message}; trying the next model`);
     }
   }
   throw new Error(`No Gemini model is available right now (${errors.join("; ")}). Free-tier quotas reset daily; add more models to GEMINI_MODEL or try later.`);
@@ -100,15 +104,28 @@ async function geminiCompleteWith<T>(model: string, prompt: string, jsonSchema: 
   // Streams (SSE) so long generations aren't cut off by fetch's 5-minute wait for response headers.
   // Newer API versions take a JSON Schema as responseJsonSchema; older ones only know responseSchema.
   const call = async (schemaField: "responseJsonSchema" | "responseSchema", schema: unknown, text: string) => {
-    const res = await fetch(`${GEMINI_API}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text }] }],
-        generationConfig: { responseMimeType: "application/json", [schemaField]: schema, maxOutputTokens: opts.maxTokens ?? 32000, ...thinkingConfig },
-      }),
-      signal: opts.timeoutMs ? AbortSignal.timeout(opts.timeoutMs) : undefined,
-    });
+    // An overloaded model can accept the request and then send nothing; give up on it after
+    // FIRST_BYTE_MS so the next model in the list gets a turn.
+    const silent = new AbortController();
+    const timer = setTimeout(() => silent.abort(), FIRST_BYTE_MS);
+    const signals = [silent.signal, ...(opts.timeoutMs ? [AbortSignal.timeout(opts.timeoutMs)] : [])];
+    let res: Response;
+    try {
+      res = await fetch(`${GEMINI_API}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text }] }],
+          generationConfig: { responseMimeType: "application/json", [schemaField]: schema, maxOutputTokens: opts.maxTokens ?? 32000, ...thinkingConfig },
+        }),
+        signal: AbortSignal.any(signals),
+      });
+    } catch (err) {
+      if (silent.signal.aborted) throw new GeminiUnavailable(`no answer within ${FIRST_BYTE_MS / 1000} s`, 0);
+      throw err;
+    } finally {
+      clearTimeout(timer);
+    }
     if (!res.ok || !res.body) return { res, body: (await res.json().catch(() => ({}))) as GeminiResponse };
 
     // Merge the streamed chunks into one response.
