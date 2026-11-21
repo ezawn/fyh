@@ -256,11 +256,13 @@ export async function generateInSteps(ctx: StepContext): Promise<AnyObj> {
   if (overview.outcome !== "cartridge") return overview;
   if (!overview.character || !overview.source) throw new Error("the overview step returned no character or source");
 
-  const world = await worldStep(ctx, { overview }, ex);
-  const abilities = await abilitiesStep(ctx, { overview }, ex);
+  // World and abilities only need step 1; the rigs and rooms only need the world, so each group runs at once.
+  const [world, abilities] = await Promise.all([worldStep(ctx, { overview }, ex), abilitiesStep(ctx, { overview }, ex)]);
   const pieces: Pieces = { overview, world, abilities, rigs: {}, rooms: [] };
-  for (const fig of figures(pieces)) pieces.rigs[fig.key] = await rigStep(ctx, fig, ex);
-  pieces.rooms = await roomsStep(ctx, pieces, ex);
+  const figs = figures(pieces);
+  const [rigs, rooms] = await Promise.all([Promise.all(figs.map((fig) => rigStep(ctx, fig, ex))), roomsStep(ctx, pieces, ex)]);
+  figs.forEach((fig, i) => (pieces.rigs[fig.key] = rigs[i]));
+  pieces.rooms = rooms;
   return { outcome: "cartridge", cartridge: stitch(pieces, ctx.character), pieces };
 }
 
@@ -287,13 +289,18 @@ export async function repairInSteps(ctx: StepContext, pieces: Pieces, problems: 
     const fixed = await overviewStep(ctx, ex, pieces.overview, byStep.get("overview"));
     if (fixed.outcome === "cartridge" && fixed.character) next.overview = fixed;
   }
-  if (byStep.has("world")) next.world = await worldStep(ctx, next, ex, pieces.world, byStep.get("world"));
-  if (byStep.has("abilities")) next.abilities = await abilitiesStep(ctx, next, ex, pieces.abilities, byStep.get("abilities"));
-  for (const fig of figures(next)) {
-    const own = byStep.get(`rig:${fig.key}`);
-    // A figure with no rig yet (e.g. a new enemy from a re-run world step) always gets one.
-    if (own || !next.rigs[fig.key]) next.rigs[fig.key] = await rigStep(ctx, fig, ex, next.rigs[fig.key], own);
-  }
-  if (byStep.has("rooms") || byStep.has("world")) next.rooms = await roomsStep(ctx, next, ex, pieces.rooms, byStep.get("rooms"));
+  // Same grouping as generateInSteps: world + abilities together, then the rigs and rooms together.
+  await Promise.all([
+    byStep.has("world") && worldStep(ctx, next, ex, pieces.world, byStep.get("world")).then((w) => (next.world = w)),
+    byStep.has("abilities") && abilitiesStep(ctx, next, ex, pieces.abilities, byStep.get("abilities")).then((a) => (next.abilities = a)),
+  ]);
+  await Promise.all([
+    ...figures(next).map((fig) => {
+      const own = byStep.get(`rig:${fig.key}`);
+      // A figure with no rig yet (e.g. a new enemy from a re-run world step) always gets one.
+      return (own || !next.rigs[fig.key]) && rigStep(ctx, fig, ex, next.rigs[fig.key], own).then((r) => (next.rigs[fig.key] = r));
+    }),
+    (byStep.has("rooms") || byStep.has("world")) && roomsStep(ctx, next, ex, pieces.rooms, byStep.get("rooms")).then((r) => (next.rooms = r)),
+  ]);
   return { cartridge: stitch(next, ctx.character), pieces: next };
 }

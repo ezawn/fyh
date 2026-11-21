@@ -304,6 +304,21 @@ await test("stepwise: repair re-runs only the broken step", async () => {
   assert.deepEqual(ai.log.slice(7), ["rig for Count Orlok"], "only the character rig step ran again");
 });
 
+await test("stepwise: independent steps run at the same time", async () => {
+  const ai = stepFake();
+  let inFlight = 0;
+  let most = 0;
+  const slow = (async (prompt: string, schema: unknown, opts: unknown) => {
+    most = Math.max(most, ++inFlight);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    inFlight--;
+    return (ai.fn as any)(prompt, schema, opts);
+  }) as unknown as CompleteFn;
+  const result = await runGenerate({ title: "Nosferatu (1922)", character: "Count Orlok" }, { store: new MemoryStore([]), complete: slow, emit: () => {}, stepwise: true });
+  assert.equal(result.status, "ready", JSON.stringify(result).slice(0, 400));
+  assert.equal(most, 4, "the 3 rigs and the rooms run together");
+});
+
 await test("stepwise: honest outcome from step 1 stops early", async () => {
   const ai = fake({ outcome: "unknown_source", message: "I don't know this film." });
   const events: GenerateEvent[] = [];
