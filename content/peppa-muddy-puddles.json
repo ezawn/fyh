@@ -1,0 +1,1217 @@
+{
+  "id": "peppa-muddy-puddles",
+  "schemaVersion": 1,
+  "status": "ready",
+  "source": {
+    "title": "Peppa Pig",
+    "medium": "tv",
+    "versionOrEpisode": "Series 1 Episode 1: Muddy Puddles",
+    "requestedCharacter": "Peppa"
+  },
+  "character": {
+    "id": "peppa",
+    "name": "Peppa",
+    "source": "Peppa Pig",
+    "versionOrEpisode": "Series 1 Episode 1: Muddy Puddles",
+    "assumptions": [
+      "Toddler / cartoon-civilian tier: Peppa is a little pig who plays in puddles, so she is the bottom anchor of the reference scale.",
+      "Stats are exactly the toddler anchor (HP 15, AD 2, no armour, no magic).",
+      "Push and Muddy Splash are playground-level physical hits; nothing she does is magic.",
+      "Big Jump is a superJump: jumping up and down in muddy puddles is her signature move.",
+      "Giggle Fit is an aoe with tiny damage but big knockback, standing in for her contagious laughter knocking everyone over.",
+      "Small and slow on purpose (speed 110, jump 360): she can still walk and jump to every exit, just never win a fight against stronger worlds."
+    ],
+    "rig": {
+      "sizeClass": "tiny",
+      "parts": {
+        "head": [
+          {
+            "type": "circle",
+            "x": 5,
+            "y": 5,
+            "r": 4,
+            "color": "#f7a1c4"
+          },
+          {
+            "type": "circle",
+            "x": 9.5,
+            "y": 4,
+            "r": 2,
+            "color": "#f7a1c4"
+          },
+          {
+            "type": "rect",
+            "x": 8.5,
+            "y": 3.5,
+            "w": 1,
+            "h": 1,
+            "color": "#d9668f"
+          },
+          {
+            "type": "rect",
+            "x": 10,
+            "y": 3.5,
+            "w": 1,
+            "h": 1,
+            "color": "#d9668f"
+          },
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 3,
+            "w": 1,
+            "h": 1,
+            "color": "#141414"
+          },
+          {
+            "type": "circle",
+            "x": 5,
+            "y": 6.5,
+            "r": 1.2,
+            "color": "#ef6f9a"
+          },
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 8,
+            "w": 2,
+            "h": 1,
+            "color": "#d9668f"
+          }
+        ],
+        "torso": [
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 9,
+            "w": 3,
+            "h": 1,
+            "color": "#e8202a"
+          },
+          {
+            "type": "rect",
+            "x": 3,
+            "y": 10,
+            "w": 5,
+            "h": 1,
+            "color": "#e8202a"
+          },
+          {
+            "type": "rect",
+            "x": 2,
+            "y": 11,
+            "w": 7,
+            "h": 2,
+            "color": "#e8202a"
+          }
+        ],
+        "armFront": [
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 10,
+            "w": 1,
+            "h": 3,
+            "color": "#f7a1c4"
+          }
+        ],
+        "armBack": [
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 10,
+            "w": 1,
+            "h": 3,
+            "color": "#d9668f"
+          }
+        ],
+        "legFront": [
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 13,
+            "w": 1,
+            "h": 2,
+            "color": "#f7a1c4"
+          },
+          {
+            "type": "rect",
+            "x": 6,
+            "y": 15,
+            "w": 2,
+            "h": 1,
+            "color": "#141414"
+          }
+        ],
+        "legBack": [
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 13,
+            "w": 1,
+            "h": 2,
+            "color": "#d9668f"
+          },
+          {
+            "type": "rect",
+            "x": 4,
+            "y": 15,
+            "w": 2,
+            "h": 1,
+            "color": "#141414"
+          }
+        ],
+        "extras": [
+          {
+            "attachTo": "head",
+            "shapes": [
+              {
+                "type": "rect",
+                "x": 2,
+                "y": 0,
+                "w": 2,
+                "h": 2,
+                "color": "#f7a1c4"
+              },
+              {
+                "type": "rect",
+                "x": 5,
+                "y": 0,
+                "w": 2,
+                "h": 2,
+                "color": "#f7a1c4"
+              }
+            ]
+          }
+        ]
+      },
+      "pivots": {
+        "neck": [
+          5,
+          9
+        ],
+        "shoulder": [
+          5,
+          10
+        ],
+        "hip": [
+          5,
+          13
+        ]
+      }
+    },
+    "collisionBox": {
+      "w": 10,
+      "h": 14
+    },
+    "movement": {
+      "speed": 110,
+      "jumpStrength": 360,
+      "canFly": false
+    },
+    "stats": {
+      "HP": 15,
+      "AD": 2,
+      "AP": 0,
+      "ARM": 0,
+      "MR": 0,
+      "ARM_PEN": 0,
+      "MAGIC_PEN": 0
+    },
+    "tags": [],
+    "abilities": [
+      {
+        "id": "push",
+        "name": "Push",
+        "slot": 1,
+        "mechanic": "melee",
+        "damageType": "physical",
+        "attackTags": [
+          "PHYSICAL"
+        ],
+        "ratio": 1,
+        "range": 14,
+        "cooldown": 0.4,
+        "duration": 0,
+        "knockback": 120,
+        "animation": "punch"
+      },
+      {
+        "id": "muddy-splash",
+        "name": "Muddy Splash",
+        "slot": 2,
+        "mechanic": "aoe",
+        "damageType": "physical",
+        "attackTags": [
+          "PHYSICAL"
+        ],
+        "ratio": 1,
+        "range": 32,
+        "cooldown": 2,
+        "duration": 0,
+        "knockback": 200,
+        "animation": "kick"
+      },
+      {
+        "id": "big-jump",
+        "name": "Big Jump",
+        "slot": 3,
+        "mechanic": "superJump",
+        "damageType": "physical",
+        "attackTags": [],
+        "ratio": 1.6,
+        "range": 0,
+        "cooldown": 3,
+        "duration": 0,
+        "knockback": 0,
+        "animation": "kick"
+      },
+      {
+        "id": "giggle-fit",
+        "name": "Giggle Fit",
+        "slot": 4,
+        "mechanic": "aoe",
+        "damageType": "physical",
+        "attackTags": [],
+        "ratio": 0.5,
+        "range": 48,
+        "cooldown": 8,
+        "duration": 0,
+        "knockback": 600,
+        "animation": "cast"
+      }
+    ]
+  },
+  "world": {
+    "id": "peppa-muddy-puddles",
+    "name": "Peppa Pig: Muddy Puddles",
+    "source": "Peppa Pig",
+    "visualStyle": {
+      "palette": {
+        "sky": "#3fa9f5",
+        "skyBottom": "#a8dcff",
+        "ground": "#4fae35",
+        "groundTop": "#8ee04a",
+        "platform": "#a0703a",
+        "accent": "#7a4a1f"
+      },
+      "backdrop": "hills"
+    },
+    "enemies": [
+      {
+        "id": "george",
+        "name": "George",
+        "rig": {
+          "sizeClass": "tiny",
+          "parts": {
+            "head": [
+              {
+                "type": "circle",
+                "x": 5,
+                "y": 6,
+                "r": 3.5,
+                "color": "#f7a1c4"
+              },
+              {
+                "type": "circle",
+                "x": 8.8,
+                "y": 5.5,
+                "r": 1.6,
+                "color": "#f7a1c4"
+              },
+              {
+                "type": "rect",
+                "x": 8,
+                "y": 5,
+                "w": 1,
+                "h": 1,
+                "color": "#d9668f"
+              },
+              {
+                "type": "rect",
+                "x": 9.5,
+                "y": 5,
+                "w": 1,
+                "h": 1,
+                "color": "#d9668f"
+              },
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 4,
+                "w": 1,
+                "h": 1,
+                "color": "#141414"
+              },
+              {
+                "type": "circle",
+                "x": 4.5,
+                "y": 7.5,
+                "r": 1,
+                "color": "#ef6f9a"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 9.5,
+                "w": 5,
+                "h": 3.5,
+                "color": "#3a7bd5"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 10,
+                "w": 1,
+                "h": 3,
+                "color": "#f7a1c4"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 10,
+                "w": 1,
+                "h": 3,
+                "color": "#d9668f"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 13,
+                "w": 1,
+                "h": 2,
+                "color": "#f7a1c4"
+              },
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 15,
+                "w": 2,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 13,
+                "w": 1,
+                "h": 2,
+                "color": "#d9668f"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 15,
+                "w": 2,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 3,
+                    "y": 1.5,
+                    "w": 1,
+                    "h": 2,
+                    "color": "#f7a1c4"
+                  },
+                  {
+                    "type": "rect",
+                    "x": 5,
+                    "y": 1.5,
+                    "w": 1,
+                    "h": 2,
+                    "color": "#f7a1c4"
+                  }
+                ]
+              },
+              {
+                "attachTo": "armFront",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 7,
+                    "y": 11,
+                    "w": 3,
+                    "h": 2,
+                    "color": "#3cb043"
+                  },
+                  {
+                    "type": "rect",
+                    "x": 9,
+                    "y": 9,
+                    "w": 2,
+                    "h": 2,
+                    "color": "#3cb043"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              5,
+              9.5
+            ],
+            "shoulder": [
+              5,
+              10
+            ],
+            "hip": [
+              5,
+              13
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 9,
+          "h": 13
+        },
+        "stats": {
+          "HP": 10,
+          "AD": 1,
+          "AP": 0,
+          "ARM": 0,
+          "MR": 0,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 0
+        },
+        "tags": [],
+        "behaviour": "walker",
+        "speed": 70,
+        "attack": {
+          "damageType": "physical",
+          "ratio": 1,
+          "attackTags": [
+            "PHYSICAL"
+          ],
+          "range": 12,
+          "cooldown": 1
+        }
+      },
+      {
+        "id": "suzy-sheep",
+        "name": "Suzy Sheep",
+        "rig": {
+          "sizeClass": "tiny",
+          "parts": {
+            "head": [
+              {
+                "type": "circle",
+                "x": 5,
+                "y": 5,
+                "r": 3.5,
+                "color": "#f8f8f8"
+              },
+              {
+                "type": "circle",
+                "x": 9,
+                "y": 5.5,
+                "r": 2,
+                "color": "#f8f8f8"
+              },
+              {
+                "type": "rect",
+                "x": 10,
+                "y": 4.5,
+                "w": 1,
+                "h": 1,
+                "color": "#e88aa8"
+              },
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 4,
+                "w": 1,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 9,
+                "w": 3,
+                "h": 1,
+                "color": "#f49ac1"
+              },
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 10,
+                "w": 5,
+                "h": 1,
+                "color": "#f49ac1"
+              },
+              {
+                "type": "rect",
+                "x": 2,
+                "y": 11,
+                "w": 7,
+                "h": 2,
+                "color": "#f49ac1"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 10,
+                "w": 1,
+                "h": 3,
+                "color": "#efe3d3"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 10,
+                "w": 1,
+                "h": 3,
+                "color": "#d8c9b6"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 13,
+                "w": 1,
+                "h": 2,
+                "color": "#efe3d3"
+              },
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 15,
+                "w": 2,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 13,
+                "w": 1,
+                "h": 2,
+                "color": "#d8c9b6"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 15,
+                "w": 2,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "circle",
+                    "x": 2.5,
+                    "y": 2.5,
+                    "r": 2,
+                    "color": "#f8f8f8"
+                  },
+                  {
+                    "type": "circle",
+                    "x": 5,
+                    "y": 1.8,
+                    "r": 1.8,
+                    "color": "#f8f8f8"
+                  },
+                  {
+                    "type": "circle",
+                    "x": 7.5,
+                    "y": 2.5,
+                    "r": 1.8,
+                    "color": "#f8f8f8"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              5,
+              9
+            ],
+            "shoulder": [
+              5,
+              10
+            ],
+            "hip": [
+              5,
+              13
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 10,
+          "h": 14
+        },
+        "stats": {
+          "HP": 12,
+          "AD": 1,
+          "AP": 0,
+          "ARM": 0,
+          "MR": 0,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 0
+        },
+        "tags": [],
+        "behaviour": "jumper",
+        "speed": 90,
+        "attack": {
+          "damageType": "physical",
+          "ratio": 1,
+          "attackTags": [
+            "PHYSICAL"
+          ],
+          "range": 12,
+          "cooldown": 1
+        }
+      },
+      {
+        "id": "danny-dog",
+        "name": "Danny Dog",
+        "rig": {
+          "sizeClass": "tiny",
+          "parts": {
+            "head": [
+              {
+                "type": "circle",
+                "x": 5,
+                "y": 5,
+                "r": 3.5,
+                "color": "#c9a27a"
+              },
+              {
+                "type": "circle",
+                "x": 8.8,
+                "y": 6,
+                "r": 2,
+                "color": "#e8d2b8"
+              },
+              {
+                "type": "circle",
+                "x": 10.5,
+                "y": 5,
+                "r": 1,
+                "color": "#141414"
+              },
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 3.5,
+                "w": 1,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "torso": [
+              {
+                "type": "rect",
+                "x": 3,
+                "y": 9,
+                "w": 5,
+                "h": 4,
+                "color": "#f2c230"
+              }
+            ],
+            "armFront": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 10,
+                "w": 1,
+                "h": 3,
+                "color": "#c9a27a"
+              }
+            ],
+            "armBack": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 10,
+                "w": 1,
+                "h": 3,
+                "color": "#7a5230"
+              }
+            ],
+            "legFront": [
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 13,
+                "w": 1,
+                "h": 2,
+                "color": "#c9a27a"
+              },
+              {
+                "type": "rect",
+                "x": 6,
+                "y": 15,
+                "w": 2,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "legBack": [
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 13,
+                "w": 1,
+                "h": 2,
+                "color": "#7a5230"
+              },
+              {
+                "type": "rect",
+                "x": 4,
+                "y": 15,
+                "w": 2,
+                "h": 1,
+                "color": "#141414"
+              }
+            ],
+            "extras": [
+              {
+                "attachTo": "head",
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "x": 1,
+                    "y": 2,
+                    "w": 2,
+                    "h": 5,
+                    "color": "#7a5230"
+                  }
+                ]
+              }
+            ]
+          },
+          "pivots": {
+            "neck": [
+              5,
+              9
+            ],
+            "shoulder": [
+              5,
+              10
+            ],
+            "hip": [
+              5,
+              13
+            ]
+          }
+        },
+        "collisionBox": {
+          "w": 10,
+          "h": 14
+        },
+        "stats": {
+          "HP": 14,
+          "AD": 2,
+          "AP": 0,
+          "ARM": 0,
+          "MR": 0,
+          "ARM_PEN": 0,
+          "MAGIC_PEN": 0
+        },
+        "tags": [],
+        "behaviour": "walker",
+        "speed": 100,
+        "attack": {
+          "damageType": "physical",
+          "ratio": 1,
+          "attackTags": [
+            "PHYSICAL"
+          ],
+          "range": 12,
+          "cooldown": 0.9
+        }
+      }
+    ],
+    "boss": {
+      "id": "daddy-pig",
+      "name": "Daddy Pig",
+      "rig": {
+        "sizeClass": "large",
+        "parts": {
+          "head": [
+            {
+              "type": "circle",
+              "x": 24,
+              "y": 13,
+              "r": 10,
+              "color": "#f7a1c4"
+            },
+            {
+              "type": "circle",
+              "x": 35,
+              "y": 12,
+              "r": 5,
+              "color": "#f7a1c4"
+            },
+            {
+              "type": "circle",
+              "x": 34,
+              "y": 11,
+              "r": 1,
+              "color": "#d9668f"
+            },
+            {
+              "type": "circle",
+              "x": 37,
+              "y": 11,
+              "r": 1,
+              "color": "#d9668f"
+            },
+            {
+              "type": "circle",
+              "x": 22,
+              "y": 18,
+              "r": 2,
+              "color": "#ef6f9a"
+            }
+          ],
+          "torso": [
+            {
+              "type": "circle",
+              "x": 24,
+              "y": 32,
+              "r": 11,
+              "color": "#2e6f6a"
+            }
+          ],
+          "armFront": [
+            {
+              "type": "rect",
+              "x": 30,
+              "y": 24,
+              "w": 4,
+              "h": 11,
+              "color": "#f7a1c4"
+            }
+          ],
+          "armBack": [
+            {
+              "type": "rect",
+              "x": 14,
+              "y": 24,
+              "w": 4,
+              "h": 11,
+              "color": "#d9668f"
+            }
+          ],
+          "legFront": [
+            {
+              "type": "rect",
+              "x": 26,
+              "y": 40,
+              "w": 4,
+              "h": 5,
+              "color": "#f7a1c4"
+            },
+            {
+              "type": "rect",
+              "x": 26,
+              "y": 45,
+              "w": 7,
+              "h": 3,
+              "color": "#141414"
+            }
+          ],
+          "legBack": [
+            {
+              "type": "rect",
+              "x": 18,
+              "y": 40,
+              "w": 4,
+              "h": 5,
+              "color": "#d9668f"
+            },
+            {
+              "type": "rect",
+              "x": 17,
+              "y": 45,
+              "w": 7,
+              "h": 3,
+              "color": "#141414"
+            }
+          ],
+          "extras": [
+            {
+              "attachTo": "head",
+              "shapes": [
+                {
+                  "type": "rect",
+                  "x": 17,
+                  "y": 1,
+                  "w": 3,
+                  "h": 4,
+                  "color": "#f7a1c4"
+                },
+                {
+                  "type": "rect",
+                  "x": 23,
+                  "y": 0,
+                  "w": 3,
+                  "h": 4,
+                  "color": "#f7a1c4"
+                }
+              ]
+            },
+            {
+              "attachTo": "head",
+              "shapes": [
+                {
+                  "type": "circle",
+                  "x": 28,
+                  "y": 9,
+                  "r": 3,
+                  "color": "#141414"
+                },
+                {
+                  "type": "circle",
+                  "x": 28,
+                  "y": 9,
+                  "r": 2,
+                  "color": "#dff4ff"
+                },
+                {
+                  "type": "circle",
+                  "x": 28.5,
+                  "y": 9,
+                  "r": 0.8,
+                  "color": "#141414"
+                }
+              ]
+            }
+          ]
+        },
+        "pivots": {
+          "neck": [
+            24,
+            22
+          ],
+          "shoulder": [
+            24,
+            25
+          ],
+          "hip": [
+            24,
+            40
+          ]
+        }
+      },
+      "collisionBox": {
+        "w": 36,
+        "h": 44
+      },
+      "stats": {
+        "HP": 80,
+        "AD": 5,
+        "AP": 0,
+        "ARM": 3,
+        "MR": 0,
+        "ARM_PEN": 0,
+        "MAGIC_PEN": 0
+      },
+      "tags": [],
+      "behaviour": "walker",
+      "speed": 90,
+      "attack": {
+        "damageType": "physical",
+        "ratio": 1,
+        "attackTags": [
+          "PHYSICAL"
+        ],
+        "range": 36,
+        "cooldown": 1.5
+      },
+      "pattern": [
+        "jump",
+        "charge"
+      ],
+      "phaseAt": 0.5
+    },
+    "rooms": [
+      {
+        "id": "peppas-hill",
+        "name": "Peppa's Hill",
+        "objective": "Run down the hill to find some muddy puddles",
+        "isBossRoom": false,
+        "exit": {
+          "toRoom": "the-muddy-fields"
+        },
+        "layout": [
+          "..................................................................",
+          "..................................................................",
+          "..................................................................",
+          "..................................................................",
+          "..................................................................",
+          "..................................................................",
+          "..................................................................",
+          "..................................................................",
+          "..................................................................",
+          "..............####...............=====............................",
+          "...........##########................................###..........",
+          "..S.....################..1.............C..^^..2..########.....E..",
+          "#############################..############################...####",
+          "#############################..############################...####"
+        ]
+      },
+      {
+        "id": "the-muddy-fields",
+        "name": "The Muddy Fields",
+        "objective": "Splash across the muddy fields",
+        "isBossRoom": false,
+        "exit": {
+          "toRoom": "the-biggest-muddy-puddle"
+        },
+        "layout": [
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          "......................................................................",
+          "..........................=====.......................................",
+          "......................................................................",
+          ".......=====.........................................###..............",
+          "......................####........................######..............",
+          "..S...........3.......####......1..C..^^.......###########..2......E..",
+          "#################...######################...#########################",
+          "#################...######################...#########################"
+        ]
+      },
+      {
+        "id": "the-biggest-muddy-puddle",
+        "name": "The Biggest Muddy Puddle",
+        "objective": "Win the jumping contest against Daddy Pig",
+        "isBossRoom": true,
+        "exit": {
+          "toRoom": "END"
+        },
+        "layout": [
+          "............................................",
+          "............................................",
+          "............................................",
+          "............................................",
+          "............................................",
+          "............................................",
+          "...............=====........................",
+          "............................................",
+          "..............................====..........",
+          "........=====.........=====.................",
+          "............................................",
+          "..S..........................^........B.....",
+          "############################################",
+          "############################################"
+        ]
+      }
+    ],
+    "dialogue": {
+      "roomIntro": [
+        [
+          {
+            "speaker": "Peppa",
+            "text": "It stopped raining! Can I go out and play, please?"
+          },
+          {
+            "speaker": "Peppa",
+            "text": "George, stop following me! ...Okay, you can come."
+          }
+        ],
+        [
+          {
+            "speaker": "Peppa",
+            "text": "Muddy puddles everywhere! I love jumping in muddy puddles!"
+          },
+          {
+            "speaker": "Suzy Sheep",
+            "text": "Peppa! Wait for me! Sheep can jump too!"
+          }
+        ],
+        [
+          {
+            "speaker": "Peppa",
+            "text": "That's the biggest muddy puddle in the whole world!"
+          }
+        ]
+      ],
+      "bossIntro": [
+        {
+          "speaker": "Daddy Pig",
+          "text": "Ho ho! I happen to be an expert at jumping in muddy puddles."
+        },
+        {
+          "speaker": "Peppa",
+          "text": "Daddy! Let's see who makes the biggest splash!"
+        }
+      ],
+      "bossDefeated": [
+        {
+          "speaker": "Daddy Pig",
+          "text": "Oh dear. I'm covered in mud! Ho ho ho!"
+        },
+        {
+          "speaker": "Peppa",
+          "text": "Everyone loves jumping in muddy puddles! *snort*"
+        }
+      ],
+      "playerDefeated": [
+        {
+          "speaker": "Peppa",
+          "text": "Waaah! I'm all muddy and it's not fun anymore!"
+        },
+        {
+          "speaker": "Daddy Pig",
+          "text": "Never mind, Peppa. Let's have a bath and try again."
+        }
+      ]
+    }
+  },
+  "notes": {
+    "sourceFacts": [
+      "'Muddy Puddles' is the first episode of Peppa Pig series 1.",
+      "Peppa and her little brother George love jumping up and down in muddy puddles.",
+      "Peppa wears a red dress; George carries his toy, Mr. Dinosaur.",
+      "In the episode Daddy Pig joins in jumping in the puddles and everyone ends up muddy.",
+      "Suzy Sheep and Danny Dog are Peppa's friends from the series."
+    ],
+    "designChoices": [
+      "Daddy Pig is the boss: his big puddle jump in the episode became a jump-and-charge boss fight.",
+      "George, Suzy Sheep and Danny Dog are playful 'enemies'; Suzy and Danny are not in this episode.",
+      "Spikes stand in for prickly thistles in the grass (the engine has only spikes as a hazard).",
+      "Room order Peppa's Hill -> The Muddy Fields -> The Biggest Muddy Puddle is invented for the game.",
+      "Push, Muddy Splash and Giggle Fit are invented abilities based on Peppa's playground behaviour.",
+      "Danny Dog's yellow top and Suzy's pink dress are simplified colour choices for tiny sprites."
+    ]
+  },
+  "createdAt": "2026-11-21T12:00:00.000Z"
+}
