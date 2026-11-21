@@ -35,5 +35,13 @@ Claude sessions on different machines can't message each other, so this repo is 
 
 Note: on Windows PowerShell 5.1, `&&` doesn't work, so run the commands one at a time (or use `;` / Git Bash).
 
+## Areas (who owns which folders)
+
+Add yourself here when you start. Don't edit folders owned by someone else.
+
+| Person | Branch | Folders |
+|--------|--------|---------|
+| Sunlighttiger43 | `sunlighttiger43/main-work` | whole repo for now (until areas are assigned) |
+
 ## Project
 - (Describe the project, stack, and how to run it here.)
