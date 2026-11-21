@@ -1,61 +1,99 @@
 /**
- * SERVER + UI LANE owns server/.
- * STUB: serves the hand-made cartridges in content/ from disk so the other lanes
- * can work before Snowflake is wired up. Replace storage with Snowflake and
- * implement /api/generate + remix lines (docs/SPEC.md sections 5.6, 7, 8).
+ * SERVER LANE. Express API (docs/SPEC.md section 7, contract in src/shared/api.ts).
+ * Storage: the shared Snowflake library, or STORE=memory for offline dev (server/store.ts).
  */
 import "dotenv/config";
 import express from "express";
-import { readdir, readFile } from "node:fs/promises";
-import path from "node:path";
-import { Cartridge } from "../src/shared/schema";
-import { toCharacterSummary, toWorldSummary, type ApiError, type SessionResponse } from "../src/shared/api";
+import type { ZodError } from "zod";
+import { toCharacterSummary, toWorldSummary, type ApiError, type GenerateEvent } from "../src/shared/api";
+import { GenerateRequestBody, runGenerate } from "./generate";
+import { HttpError, SessionRequestBody, runSession } from "./session";
+import { cortexComplete } from "./snowflake";
+import { createStore } from "./store";
 
-const CONTENT_DIR = path.resolve("content");
+const store = await createStore();
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 
-function fail(res: express.Response, status: number, code: string, message: string) {
+function sendError(res: express.Response, status: number, code: string, message: string) {
   const body: ApiError = { error: { code, message } };
   res.status(status).json(body);
 }
 
-async function loadAll(): Promise<Cartridge[]> {
-  const files = (await readdir(CONTENT_DIR).catch(() => [])).filter((f) => f.endsWith(".json"));
-  const carts: Cartridge[] = [];
-  for (const f of files) {
-    const parsed = Cartridge.safeParse(JSON.parse(await readFile(path.join(CONTENT_DIR, f), "utf8")));
-    if (parsed.success && parsed.data.status === "ready") carts.push(parsed.data);
-    else if (!parsed.success) console.warn(`Skipping invalid cartridge ${f}`);
-  }
-  return carts;
+function zodMessage(err: ZodError): string {
+  return err.issues.map((i) => `${i.path.join(".") || "body"}: ${i.message}`).join("; ");
 }
 
-app.get("/api/characters", async (_req, res) => res.json((await loadAll()).map(toCharacterSummary)));
-app.get("/api/worlds", async (_req, res) => res.json((await loadAll()).map(toWorldSummary)));
+/** Express 4 doesn't catch rejected promises: route them to the error handler. */
+const route =
+  (fn: (req: express.Request, res: express.Response) => Promise<unknown>): express.RequestHandler =>
+  (req, res, next) =>
+    fn(req, res).catch(next);
 
-app.get("/api/cartridges/:id", async (req, res) => {
-  const cart = (await loadAll()).find((c) => c.id === req.params.id);
-  if (!cart) return fail(res, 404, "NOT_FOUND", `No cartridge "${req.params.id}"`);
-  res.json(cart);
+app.get("/api/characters", route(async (_req, res) => res.json((await store.listReady()).map(toCharacterSummary))));
+
+app.get("/api/worlds", route(async (_req, res) => res.json((await store.listReady()).map(toWorldSummary))));
+
+app.get(
+  "/api/cartridges/:id",
+  route(async (req, res) => {
+    const id = String(req.params.id);
+    const cart = await store.get(id);
+    if (!cart || cart.status !== "ready") return sendError(res, 404, "NOT_FOUND", `No cartridge "${id}"`);
+    res.json(cart);
+  }),
+);
+
+app.post(
+  "/api/session",
+  route(async (req, res) => {
+    const body = SessionRequestBody.safeParse(req.body);
+    if (!body.success) return sendError(res, 400, "BAD_REQUEST", zodMessage(body.error));
+    res.json(await runSession(body.data, { store, complete: cortexComplete }));
+  }),
+);
+
+app.post(
+  "/api/generate",
+  route(async (req, res) => {
+    const body = GenerateRequestBody.safeParse(req.body);
+    if (!body.success) return sendError(res, 400, "BAD_REQUEST", zodMessage(body.error));
+
+    res.status(200);
+    res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
+    res.setHeader("Cache-Control", "no-cache, no-transform");
+    res.setHeader("X-Accel-Buffering", "no");
+    res.flushHeaders();
+    res.socket?.setNoDelay(true);
+
+    let closed = false;
+    res.on("close", () => (closed = true));
+    const emit = (event: GenerateEvent) => {
+      if (!closed) res.write(JSON.stringify(event) + "\n");
+    };
+    // Generation keeps going if the client disconnects, so a finished cartridge still lands in the library.
+    const result = await runGenerate(body.data, { store, complete: cortexComplete, emit });
+    console.log(`[generate] "${body.data.title}" / "${body.data.character}" -> ${result.status}${result.status === "ready" ? ` (${result.cartridge.id})` : ""}`);
+    res.end();
+  }),
+);
+
+app.use("/api", (_req, res) => sendError(res, 404, "NOT_FOUND", "No such API route"));
+
+// Error handler: malformed JSON, HttpError, store/Snowflake failures.
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  if (res.headersSent) {
+    res.end();
+    return;
+  }
+  const e = err as { type?: string; status?: number; message?: string };
+  if (err instanceof HttpError) return sendError(res, err.status, err.code, err.message);
+  if (e?.type === "entity.parse.failed") return sendError(res, 400, "BAD_REQUEST", "Request body is not valid JSON");
+  if (e?.type === "entity.too.large") return sendError(res, 413, "TOO_LARGE", "Request body is too large");
+  const message = (e?.message ?? String(err)).split("\n")[0];
+  console.error(`[api] ${message}`);
+  sendError(res, 503, "STORE_UNAVAILABLE", `The ${store.kind === "snowflake" ? "Snowflake library" : "store"} is unavailable: ${message}`);
 });
-
-app.post("/api/session", async (req, res) => {
-  const { characterId, worldId } = req.body ?? {};
-  const carts = await loadAll();
-  const character = carts.find((c) => c.character.id === characterId)?.character;
-  const world = carts.find((c) => c.world.id === worldId)?.world;
-  if (!character || !world) return fail(res, 404, "NOT_FOUND", "Unknown character or world");
-  const session: SessionResponse = {
-    character: structuredClone(character),
-    world: structuredClone(world),
-    dialogue: structuredClone(world.dialogue),
-    dialogueSource: "original",
-  };
-  res.json(session);
-});
-
-app.post("/api/generate", (_req, res) => fail(res, 501, "NOT_IMPLEMENTED", "Generation not built yet"));
 
 const port = Number(process.env.PORT ?? 3001);
-app.listen(port, () => console.log(`API on http://localhost:${port}`));
+app.listen(port, () => console.log(`API on http://localhost:${port} (store: ${store.kind})`));
