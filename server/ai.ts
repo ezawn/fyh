@@ -65,7 +65,7 @@ class GeminiUnavailable extends Error {
 const exhausted = new Map<string, number>();
 
 /** How long to wait for a Gemini model to start answering before trying the next one. */
-const FIRST_BYTE_MS = Number(process.env.GEMINI_FIRST_BYTE_MS ?? 90_000);
+const FIRST_BYTE_MS = Number(process.env.GEMINI_FIRST_BYTE_MS ?? 30_000);
 
 /**
  * One Gemini call constrained by a JSON schema; returns the parsed object.
@@ -86,6 +86,7 @@ export async function geminiComplete<T = unknown>(prompt: string, jsonSchema: un
       if (!(err instanceof GeminiUnavailable)) throw err;
       if (err.untilMs) exhausted.set(model, err.untilMs);
       errors.push(`${model}: ${err.message}`);
+      console.warn(`[ai] ${model}: ${err.message}; trying the next model`);
     }
   }
   throw new Error(`No Gemini model is available right now (${errors.join("; ")}). Free-tier quotas reset daily; add more models to GEMINI_MODEL or try later.`);
