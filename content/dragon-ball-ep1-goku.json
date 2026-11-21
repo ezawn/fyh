@@ -12,14 +12,14 @@
     "id": "goku",
     "name": "Goku",
     "source": "Dragon Ball",
-    "versionOrEpisode": "Iconic (Kamehameha, Nimbus, Power Pole)",
+    "versionOrEpisode": "Iconic (Kamehameha, Instant Transmission, Power Pole)",
     "assumptions": [
-      "Uses the iconic adult Goku (Kamehameha, Flying Nimbus, Power Pole), not the episode-1 kid Goku.",
+      "Uses the iconic adult Goku (Kamehameha, Instant Transmission, Power Pole), not the episode-1 kid Goku.",
       "Planet-level on the reference scale: iconic Goku fights at planet-busting levels (Frieza-era and beyond), so he is the planet-level anchor.",
       "Stats are exactly the planet-level anchor (HP 10000, AD 1000, AP 1000, ARM 800, MR 800).",
       "Martial-arts hits are physical (AD); ki attacks (Ki Blast, Kamehameha) are magic damage with the ENERGY tag (AP).",
       "Small flat penetration (100) reflects his training to strike through guards and ki defences.",
-      "Flight comes from the Flying Nimbus ability rather than innate flight, so canFly is false and he has no FLIGHT tag.",
+      "Movement slot is Instant Transmission (teleport mechanic). The Flying Nimbus was dropped by team decision, so canFly is false and he has no FLIGHT tag.",
       "The Power Pole is a visual/flavour reference only; the engine has no extending-staff mechanic."
     ],
     "rig": {
@@ -627,16 +627,16 @@
         "animation": "cast"
       },
       {
-        "id": "flying-nimbus",
-        "name": "Flying Nimbus",
+        "id": "instant-transmission",
+        "name": "Instant Transmission",
         "slot": 3,
-        "mechanic": "flight",
+        "mechanic": "teleport",
         "damageType": "physical",
         "attackTags": [],
         "ratio": 0,
-        "range": 0,
-        "cooldown": 6,
-        "duration": 4,
+        "range": 160,
+        "cooldown": 3,
+        "duration": 0,
         "knockback": 0,
         "animation": "cast"
       },
