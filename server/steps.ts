@@ -149,7 +149,15 @@ function figures(p: Pieces): Figure[] {
 
 async function runStep<T extends AnyObj>(ctx: StepContext, name: StepName, label: string, prompt: string, maxTokens: number): Promise<T> {
   ctx.onStep(label);
-  const out = await ctx.complete<T>(prompt, SCHEMAS[name], { maxTokens, effort: name === "rig" ? "medium" : "high" });
+  const effort = name === "rig" ? "low" : "high";
+  let out: T;
+  try {
+    out = await ctx.complete<T>(prompt, SCHEMAS[name], { maxTokens, effort });
+  } catch (err) {
+    // Thinking counts toward the output limit, so a long answer can get cut off: retry once with more room.
+    if (!/cut off/i.test((err as Error)?.message ?? "")) throw err;
+    out = await ctx.complete<T>(prompt, SCHEMAS[name], { maxTokens: maxTokens * 3, effort: "low" });
+  }
   if (!out || typeof out !== "object") throw new Error(`the ${name} step returned no JSON object`);
   return out;
 }
@@ -163,7 +171,7 @@ async function overviewStep(ctx: StepContext, ex: ReturnType<typeof exampleSlice
     example: ex?.overview,
     current,
     problems,
-  }), 8000);
+  }), 16000);
 }
 
 async function worldStep(ctx: StepContext, p: Pick<Pieces, "overview">, ex: ReturnType<typeof exampleSlices>, current?: AnyObj, problems?: string[]) {
@@ -175,7 +183,7 @@ async function worldStep(ctx: StepContext, p: Pick<Pieces, "overview">, ex: Retu
     example: ex?.world,
     current,
     problems,
-  }), 12000);
+  }), 24000);
 }
 
 async function abilitiesStep(ctx: StepContext, p: Pick<Pieces, "overview">, ex: ReturnType<typeof exampleSlices>, current?: AnyObj, problems?: string[]) {
@@ -187,7 +195,7 @@ async function abilitiesStep(ctx: StepContext, p: Pick<Pieces, "overview">, ex: 
     example: ex?.abilities,
     current: current ? { abilities: current } : undefined,
     problems,
-  }), 6000);
+  }), 12000);
   return (out.abilities ?? []) as AnyObj[];
 }
 
@@ -200,7 +208,7 @@ async function rigStep(ctx: StepContext, fig: Figure, ex: ReturnType<typeof exam
     example: ex?.rig,
     current: current ? { rig: current } : undefined,
     problems,
-  }), 10000);
+  }), 20000);
   return (out.rig ?? {}) as AnyObj;
 }
 
@@ -219,7 +227,7 @@ async function roomsStep(ctx: StepContext, p: Pick<Pieces, "overview" | "world">
     example: ex?.rooms,
     current: current ? { rooms: current } : undefined,
     problems,
-  }), 12000);
+  }), 24000);
   return (out.rooms ?? []) as AnyObj[];
 }
 

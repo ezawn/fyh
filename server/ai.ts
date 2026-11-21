@@ -54,11 +54,43 @@ type GeminiResponse = {
   error?: { code?: number; message?: string; status?: string; details?: { retryDelay?: string }[] };
 };
 
-/** One Gemini generateContent call constrained by a JSON schema; returns the parsed object. */
+/** A model that's out of free-tier quota (or still busy after retries); the next model in GEMINI_MODEL is tried. */
+class GeminiUnavailable extends Error {
+  constructor(message: string, readonly untilMs: number) {
+    super(message);
+  }
+}
+
+/** Models whose daily free-tier quota ran out in this process, with when to try them again. */
+const exhausted = new Map<string, number>();
+
+/**
+ * One Gemini call constrained by a JSON schema; returns the parsed object.
+ * GEMINI_MODEL may list several models ("a,b,c"): the free tier allows only about 20
+ * requests a day per model, so when one runs out (or stays busy) the next one is used.
+ */
 export async function geminiComplete<T = unknown>(prompt: string, jsonSchema: unknown, opts: CompleteOptions = {}): Promise<T> {
+  const models = (process.env.GEMINI_MODEL ?? "gemini-3.6-flash").split(",").map((m) => m.trim()).filter(Boolean);
+  const errors: string[] = [];
+  for (const model of models) {
+    if ((exhausted.get(model) ?? 0) > Date.now()) {
+      errors.push(`${model}: daily free quota used up`);
+      continue;
+    }
+    try {
+      return await geminiCompleteWith<T>(model, prompt, jsonSchema, opts);
+    } catch (err) {
+      if (!(err instanceof GeminiUnavailable)) throw err;
+      if (err.untilMs) exhausted.set(model, err.untilMs);
+      errors.push(`${model}: ${err.message}`);
+    }
+  }
+  throw new Error(`No Gemini model is available right now (${errors.join("; ")}). Free-tier quotas reset daily; add more models to GEMINI_MODEL or try later.`);
+}
+
+async function geminiCompleteWith<T>(model: string, prompt: string, jsonSchema: unknown, opts: CompleteOptions): Promise<T> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("Missing GEMINI_API_KEY in .env");
-  const model = process.env.GEMINI_MODEL ?? "gemini-3.6-flash";
   const schema = cortexSafeSchema(jsonSchema);
 
   // Gemini 3+ models take a thinking level; map our effort onto it so short jobs stay fast.
@@ -130,6 +162,11 @@ export async function geminiComplete<T = unknown>(prompt: string, jsonSchema: un
   for (const depth of [4, 3, 2]) {
     if (!(res.status === 400 && /too many states/i.test(body.error?.message ?? ""))) break;
     ({ res, body } = await busyRetry("responseJsonSchema", shallowSchema(schema, depth), withSchema));
+  }
+  if (res.status === 429 || res.status === 503) {
+    const asked = body.error?.details?.find((d) => d.retryDelay)?.retryDelay;
+    const askedMs = asked ? parseFloat(asked) * 1000 : 0;
+    throw new GeminiUnavailable(res.status === 503 ? "busy" : askedMs > 60_000 ? "daily free quota used up" : "rate limited", askedMs > 60_000 ? Date.now() + askedMs : 0);
   }
   if (!res.ok) throw new Error(`Gemini ${res.status} ${body.error?.status ?? ""}: ${(body.error?.message ?? "request failed").split("\n")[0]}`);
 
