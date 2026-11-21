@@ -1,6 +1,6 @@
 /**
  * ENGINE LANE owns src/engine/.
- * Public API the UI calls. Keep this signature stable.
+ * Public API the UI calls. Keep this signature stable (docs/LANES.md).
  */
 import Phaser from "phaser";
 import { GameScene, VIEW_H, VIEW_W } from "./core/GameScene";

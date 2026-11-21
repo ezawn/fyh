@@ -5,11 +5,11 @@
  */
 import Phaser from "phaser";
 import type { Room, Session } from "../session";
+import { GRAVITY, TILE } from "../../shared/schema";
 
-export const TILE = 16;
+export { GRAVITY, TILE };
 export const VIEW_W = 400;
 export const VIEW_H = 224;
-export const GRAVITY = 900; // px/s²
 
 export type SceneInit = { session: Session; roomIndex: number; onExit: (r: { outcome: "won" | "died" | "quit" }) => void };
 
