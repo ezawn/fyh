@@ -104,7 +104,7 @@ type Outcome =
 
 /** Interprets Cortex's GenerationOutput honestly. */
 function interpret(raw: unknown): Outcome {
-  if (!raw || typeof raw !== "object") return { kind: "result", result: { status: "failed", message: "Cortex returned something that isn't a JSON object." } };
+  if (!raw || typeof raw !== "object") return { kind: "result", result: { status: "failed", message: "The AI returned something that isn't a JSON object." } };
   const out = raw as AnyObj;
   if (out.outcome === "needs_clarification") {
     const question = typeof out.question === "string" && out.question.trim() ? out.question.trim() : "Which exact film, series or episode do you mean?";
@@ -115,7 +115,7 @@ function interpret(raw: unknown): Outcome {
     return { kind: "result", result: { status: "unknown_source", message } };
   }
   if (out.outcome === "cartridge" && out.cartridge && typeof out.cartridge === "object") return { kind: "cartridge", body: out.cartridge };
-  return { kind: "result", result: { status: "failed", message: `Cortex returned outcome "${String(out.outcome)}" without a cartridge.` } };
+  return { kind: "result", result: { status: "failed", message: `The AI returned outcome "${String(out.outcome)}" without a cartridge.` } };
 }
 
 /** Runs the whole pipeline. Always ends with exactly one {type:"result"} event; never throws. */
@@ -131,12 +131,12 @@ export async function runGenerate(input: { title: string; character: string }, d
 
   try {
     // 1. interpreting: the Cortex call
-    stage("interpreting", `Asking Cortex about "${input.title}" / "${input.character}"`);
+    stage("interpreting", `Asking the AI about "${input.title}" / "${input.character}"`);
     let raw: unknown;
     try {
       raw = await complete(generationPrompt(input.title, input.character, loadExample()), schema, { maxTokens: MAX_TOKENS, effort: "high" });
     } catch (err) {
-      return finish({ status: "failed", message: `Cortex generation failed: ${errMsg(err)}` });
+      return finish({ status: "failed", message: `AI generation failed: ${errMsg(err)}` });
     }
     const first = interpret(raw);
     if (first.kind === "result") return finish(first.result);
@@ -154,7 +154,7 @@ export async function runGenerate(input: { title: string; character: string }, d
       try {
         repaired = await complete(repairPrompt(input.title, input.character, body(cart), problems), schema, { maxTokens: MAX_TOKENS, effort: "high" });
       } catch (err) {
-        return finish({ status: "failed", message: `Cortex repair call failed: ${errMsg(err)}`, problems: problems.slice(0, MAX_PROBLEMS_SHOWN) });
+        return finish({ status: "failed", message: `AI repair call failed: ${errMsg(err)}`, problems: problems.slice(0, MAX_PROBLEMS_SHOWN) });
       }
       const second = interpret(repaired);
       if (second.kind === "result") {

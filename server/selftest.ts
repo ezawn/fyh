@@ -201,7 +201,7 @@ await test("generate: honesty outcomes pass through", async () => {
 await test("generate: Cortex error -> failed with a clear message", async () => {
   const { result } = await gen(new MemoryStore(), fake(new Error("Model not available in region")));
   assert.equal(result.status, "failed");
-  if (result.status === "failed") assert.match(result.message, /Cortex generation failed: Model not available/);
+  if (result.status === "failed") assert.match(result.message, /AI generation failed: Model not available/);
 });
 
 // ---------- session ----------

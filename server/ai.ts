@@ -25,6 +25,29 @@ export function aiProvider(): AiProvider {
 
 const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta";
 
+/** Keeps the schema's structure down to `depth` levels of objects/arrays; deeper values become open. */
+export function shallowSchema(schema: unknown, depth: number): unknown {
+  if (Array.isArray(schema)) return schema.map((s) => shallowSchema(s, depth));
+  if (!schema || typeof schema !== "object") return schema;
+  const s = schema as Record<string, unknown>;
+  if (depth <= 0 && (s.type === "object" || s.type === "array" || s.anyOf)) {
+    return s.type === "array" ? { type: "array", items: {} } : { type: "object" };
+  }
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(s)) {
+    if (k === "properties" && v && typeof v === "object") {
+      out[k] = Object.fromEntries(Object.entries(v).map(([name, sub]) => [name, shallowSchema(sub, depth - 1)]));
+    } else if (k === "items") {
+      out[k] = shallowSchema(v, depth - 1);
+    } else if (k === "anyOf") {
+      out[k] = shallowSchema(v, depth);
+    } else {
+      out[k] = v;
+    }
+  }
+  return out;
+}
+
 type GeminiResponse = {
   candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] }; finishReason?: string }[];
   promptFeedback?: { blockReason?: string };
@@ -38,22 +61,72 @@ export async function geminiComplete<T = unknown>(prompt: string, jsonSchema: un
   const model = process.env.GEMINI_MODEL ?? "gemini-3.6-flash";
   const schema = cortexSafeSchema(jsonSchema);
 
+  // Gemini 3+ models take a thinking level; map our effort onto it so short jobs stay fast.
+  const thinkingLevel = { low: "LOW", medium: "MEDIUM", high: "HIGH", xhigh: "HIGH", max: "HIGH" }[opts.effort ?? "medium"];
+  const thinkingConfig = /^gemini-([3-9]|\d{2,})/.test(model) ? { thinkingConfig: { thinkingLevel } } : {};
+
+  // Streams (SSE) so long generations aren't cut off by fetch's 5-minute wait for response headers.
   // Newer API versions take a JSON Schema as responseJsonSchema; older ones only know responseSchema.
-  const call = async (schemaField: "responseJsonSchema" | "responseSchema") => {
-    const res = await fetch(`${GEMINI_API}/models/${encodeURIComponent(model)}:generateContent`, {
+  const call = async (schemaField: "responseJsonSchema" | "responseSchema", schema: unknown, text: string) => {
+    const res = await fetch(`${GEMINI_API}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": key },
       body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: "application/json", [schemaField]: schema, maxOutputTokens: opts.maxTokens ?? 32000 },
+        contents: [{ role: "user", parts: [{ text }] }],
+        generationConfig: { responseMimeType: "application/json", [schemaField]: schema, maxOutputTokens: opts.maxTokens ?? 32000, ...thinkingConfig },
       }),
       signal: opts.timeoutMs ? AbortSignal.timeout(opts.timeoutMs) : undefined,
     });
-    return { res, body: (await res.json().catch(() => ({}))) as GeminiResponse };
+    if (!res.ok || !res.body) return { res, body: (await res.json().catch(() => ({}))) as GeminiResponse };
+
+    // Merge the streamed chunks into one response.
+    let out = "";
+    let finishReason: string | undefined;
+    let blockReason: string | undefined;
+    let buffer = "";
+    const decoder = new TextDecoder();
+    const take = (line: string) => {
+      if (!line.startsWith("data:")) return;
+      const chunk = JSON.parse(line.slice(5)) as GeminiResponse;
+      blockReason ??= chunk.promptFeedback?.blockReason;
+      const c = chunk.candidates?.[0];
+      out += (c?.content?.parts ?? []).filter((p) => !p.thought).map((p) => p.text ?? "").join("");
+      finishReason = c?.finishReason ?? finishReason;
+    };
+    const reader = res.body.getReader();
+    for (let r = await reader.read(); !r.done; r = await reader.read()) {
+      buffer += decoder.decode(r.value, { stream: true });
+      const lines = buffer.split(/\r?\n/);
+      buffer = lines.pop() ?? "";
+      lines.forEach(take);
+    }
+    take(buffer);
+    const body: GeminiResponse = {
+      candidates: [{ content: { parts: [{ text: out }] }, finishReason }],
+      promptFeedback: blockReason ? { blockReason } : undefined,
+    };
+    return { res, body };
   };
 
-  let { res, body } = await call("responseJsonSchema");
-  if (res.status === 400 && /responseJsonSchema/i.test(body.error?.message ?? "")) ({ res, body } = await call("responseSchema"));
+  // Free-tier models are often busy (503) or rate-limited (429): retry those twice with a short backoff.
+  const busyRetry: typeof call = async (field, s, text) => {
+    let r = await call(field, s, text);
+    for (const waitMs of [3000, 8000]) {
+      if (r.res.status !== 503 && r.res.status !== 429) break;
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+      r = await call(field, s, text);
+    }
+    return r;
+  };
+  let { res, body } = await busyRetry("responseJsonSchema", schema, prompt);
+  if (res.status === 400 && /responseJsonSchema/i.test(body.error?.message ?? "")) ({ res, body } = await busyRetry("responseSchema", schema, prompt));
+  // Gemini can't serve schemas as big as a whole cartridge. Retry with shallower ones and put the
+  // full schema in the prompt instead; validateCartridge + one repair call enforce the rest.
+  const withSchema = `${prompt}\n\nYour JSON must match this JSON Schema exactly, including every required field at every depth:\n${JSON.stringify(schema)}`;
+  for (const depth of [4, 3, 2]) {
+    if (!(res.status === 400 && /too many states/i.test(body.error?.message ?? ""))) break;
+    ({ res, body } = await busyRetry("responseJsonSchema", shallowSchema(schema, depth), withSchema));
+  }
   if (!res.ok) throw new Error(`Gemini ${res.status} ${body.error?.status ?? ""}: ${(body.error?.message ?? "request failed").split("\n")[0]}`);
 
   if (body.promptFeedback?.blockReason) throw new Error(`Gemini blocked the prompt (${body.promptFeedback.blockReason})`);
