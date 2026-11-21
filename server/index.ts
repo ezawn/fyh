@@ -8,7 +8,7 @@ import type { ZodError } from "zod";
 import { toCharacterSummary, toWorldSummary, type ApiError, type GenerateEvent } from "../src/shared/api";
 import { GenerateRequestBody, runGenerate } from "./generate";
 import { HttpError, SessionRequestBody, runSession } from "./session";
-import { cortexComplete } from "./snowflake";
+import { aiComplete, aiProvider } from "./ai";
 import { createStore } from "./store";
 
 const store = await createStore();
@@ -49,7 +49,7 @@ app.post(
   route(async (req, res) => {
     const body = SessionRequestBody.safeParse(req.body);
     if (!body.success) return sendError(res, 400, "BAD_REQUEST", zodMessage(body.error));
-    res.json(await runSession(body.data, { store, complete: cortexComplete }));
+    res.json(await runSession(body.data, { store, complete: aiComplete }));
   }),
 );
 
@@ -72,7 +72,7 @@ app.post(
       if (!closed) res.write(JSON.stringify(event) + "\n");
     };
     // Generation keeps going if the client disconnects, so a finished cartridge still lands in the library.
-    const result = await runGenerate(body.data, { store, complete: cortexComplete, emit });
+    const result = await runGenerate(body.data, { store, complete: aiComplete, emit });
     console.log(`[generate] "${body.data.title}" / "${body.data.character}" -> ${result.status}${result.status === "ready" ? ` (${result.cartridge.id})` : ""}`);
     res.end();
   }),
@@ -96,4 +96,4 @@ app.use((err: unknown, _req: express.Request, res: express.Response, _next: expr
 });
 
 const port = Number(process.env.PORT ?? 3001);
-app.listen(port, () => console.log(`API on http://localhost:${port} (store: ${store.kind})`));
+app.listen(port, () => console.log(`API on http://localhost:${port} (store: ${store.kind}, ai: ${aiProvider()})`));

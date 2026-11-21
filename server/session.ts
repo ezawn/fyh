@@ -114,6 +114,7 @@ async function remixFor(character: CharacterDef, world: WorldDef, deps: SessionD
         complete(remixPrompt(character, world, describeMatchup(character, world)), remixLinesJsonSchema(), {
           maxTokens: 4000,
           temperature: 0.7,
+          effort: "low", // has to finish inside the 20 s budget
           timeoutMs: deps.timeoutMs ?? REMIX_TIMEOUT_MS,
         }),
         deps.timeoutMs ?? REMIX_TIMEOUT_MS,

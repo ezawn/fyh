@@ -99,7 +99,13 @@ export function sqlLiteral(value: unknown): string {
   return `{${entries.join(", ")}}`;
 }
 
-export type CompleteOptions = { model?: string; maxTokens?: number; temperature?: number; timeoutMs?: number };
+export type CompleteOptions = {
+  model?: string;
+  maxTokens?: number;
+  temperature?: number; // Cortex only; Claude Opus 5.5 rejects sampling parameters
+  effort?: "low" | "medium" | "high" | "xhigh" | "max"; // Anthropic only
+  timeoutMs?: number;
+};
 
 /** Signature shared by the real Cortex call and test fakes. */
 export type CompleteFn = <T = unknown>(prompt: string, jsonSchema: unknown, opts?: CompleteOptions) => Promise<T>;

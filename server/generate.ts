@@ -134,7 +134,7 @@ export async function runGenerate(input: { title: string; character: string }, d
     stage("interpreting", `Asking Cortex about "${input.title}" / "${input.character}"`);
     let raw: unknown;
     try {
-      raw = await complete(generationPrompt(input.title, input.character, loadExample()), schema, { maxTokens: MAX_TOKENS });
+      raw = await complete(generationPrompt(input.title, input.character, loadExample()), schema, { maxTokens: MAX_TOKENS, effort: "high" });
     } catch (err) {
       return finish({ status: "failed", message: `Cortex generation failed: ${errMsg(err)}` });
     }
@@ -152,7 +152,7 @@ export async function runGenerate(input: { title: string; character: string }, d
       stage("repairing", `${problems.length} problem(s) after auto-fix`);
       let repaired: unknown;
       try {
-        repaired = await complete(repairPrompt(input.title, input.character, body(cart), problems), schema, { maxTokens: MAX_TOKENS });
+        repaired = await complete(repairPrompt(input.title, input.character, body(cart), problems), schema, { maxTokens: MAX_TOKENS, effort: "high" });
       } catch (err) {
         return finish({ status: "failed", message: `Cortex repair call failed: ${errMsg(err)}`, problems: problems.slice(0, MAX_PROBLEMS_SHOWN) });
       }
