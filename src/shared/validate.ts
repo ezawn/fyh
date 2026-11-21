@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cartridge validation and auto-repair (docs/SPEC.md 8.3).
  * Browser-safe: no Node imports. Used by the server before saving and by the engine before loading.
  */
@@ -6,6 +6,7 @@ import {
   Cartridge,
   GRAVITY,
   MAX_DIALOGUE_CHARS,
+  MAX_ENEMY_TYPES,
   RIG_SIZES,
   ROOM_MAX_COLS,
   ROOM_MIN_COLS,
@@ -55,6 +56,28 @@ export function validateCartridge(json: unknown): string[] {
   checkRig(character.rig, "character.rig", problems);
   world.enemies.forEach((e, i) => checkRig(e.rig, `world.enemies.${i}.rig`, problems));
   checkRig(world.boss.rig, "world.boss.rig", problems);
+  (world.npcs ?? []).forEach((n, i) => checkRig(n.rig, `world.npcs.${i}.rig`, problems));
+  dupes((world.npcs ?? []).map((n) => n.id), "world.npcs", problems);
+
+  // Props fit their canvas, and placements point at real props inside the room
+  dupes((world.props ?? []).map((p) => p.id), "world.props", problems);
+  (world.props ?? []).forEach((prop, i) => {
+    for (const s of prop.shapes) {
+      const [x0, y0, x1, y1] = s.type === "rect" ? [s.x, s.y, s.x + s.w, s.y + s.h] : [s.x - s.r, s.y - s.r, s.x + s.r, s.y + s.r];
+      if (x0 < -0.5 || y0 < -0.5 || x1 > prop.size.w + 0.5 || y1 > prop.size.h + 0.5) {
+        problems.push(`world.props.${i} (${prop.id}): a shape goes outside its ${prop.size.w}x${prop.size.h} canvas`);
+        break;
+      }
+    }
+  });
+  const propIds = new Set((world.props ?? []).map((p) => p.id));
+  world.rooms.forEach((room, i) => {
+    const cols = room.layout[0]?.length ?? 0;
+    (room.props ?? []).forEach((pl, j) => {
+      if (!propIds.has(pl.prop)) problems.push(`world.rooms.${i}.props.${j}: unknown prop "${pl.prop}"`);
+      if (pl.col >= cols || pl.row >= ROOM_ROWS) problems.push(`world.rooms.${i}.props.${j}: (${pl.col}, ${pl.row}) is outside the room`);
+    });
+  });
 
   // Rooms
   const roomIds = new Set(world.rooms.map((r) => r.id));
@@ -62,7 +85,7 @@ export function validateCartridge(json: unknown): string[] {
     const p = `world.rooms.${i}`;
     const isLast = i === world.rooms.length - 1;
     if (room.isBossRoom !== isLast) problems.push(`${p}: ${isLast ? "the last room must be the boss room" : "only the last room may be the boss room"}`);
-    checkLayout(room, p, world.enemies.length, problems);
+    checkLayout(room, p, world.enemies.length, world.npcs?.length ?? 0, problems);
     if (room.isBossRoom) {
       if (room.exit.toRoom !== "END") problems.push(`${p}.exit.toRoom: boss room must exit to "END"`);
     } else if (!roomIds.has(room.exit.toRoom) || room.exit.toRoom === room.id) {
@@ -111,7 +134,7 @@ function checkRig(rig: Rig, path: string, problems: string[]) {
   }
 }
 
-function checkLayout(room: Room, p: string, enemyCount: number, problems: string[]) {
+function checkLayout(room: Room, p: string, enemyCount: number, npcCount: number, problems: string[]) {
   const width = room.layout[0]?.length ?? 0;
   if (width < ROOM_MIN_COLS || width > ROOM_MAX_COLS) problems.push(`${p}.layout: width ${width} must be ${ROOM_MIN_COLS}-${ROOM_MAX_COLS}`);
   room.layout.forEach((row, r) => {
@@ -128,9 +151,12 @@ function checkLayout(room: Room, p: string, enemyCount: number, problems: string
     if (count(TILES.EXIT) !== 1) problems.push(`${p}: needs exactly one exit "E" (found ${count(TILES.EXIT)})`);
     if (count(TILES.BOSS) !== 0) problems.push(`${p}: only the boss room may have "B"`);
   }
-  for (let n = 1; n <= 3; n++) {
+  for (let n = 1; n <= MAX_ENEMY_TYPES; n++) {
     if (count(String(n)) > 0 && n > enemyCount) problems.push(`${p}: uses enemy "${n}" but the world has ${enemyCount} enemy type(s)`);
   }
+  ["a", "b", "c"].forEach((ch, i) => {
+    if (count(ch) > 0 && i >= npcCount) problems.push(`${p}: uses NPC "${ch}" but the world has ${npcCount} NPC(s)`);
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -299,6 +325,10 @@ export function autoFix<T>(json: T): T {
       if (!Array.isArray(e.tags)) e.tags = [];
     }
     if (world.boss) clamp(world.boss, "phaseAt", 0, 1);
+    if (!Array.isArray(world.npcs)) world.npcs = [];
+    if (!Array.isArray(world.props)) world.props = [];
+    for (const n of world.npcs) if (n?.id) n.id = kebab(n.id);
+    for (const p of world.props) if (p?.id) p.id = kebab(p.id);
 
     if (Array.isArray(world.rooms)) {
       world.rooms.forEach((room: AnyObj, i: number) => {

@@ -161,8 +161,10 @@ type WorldDef = {
     palette: { sky: string; skyBottom: string; ground: string; groundTop: string; platform: string; accent: string };
     backdrop: "hills" | "mountains" | "forest" | "city" | "school" | "interior" | "void";  // engine-drawn parallax
   };
-  enemies: EnemyDef[];           // 1–3 types
+  enemies: EnemyDef[];           // 1–5 types
   boss: BossDef;
+  npcs?: NpcDef[];               // 0–3 friendly characters from the show; stand at "a"–"c" and talk when the player is near
+  props?: PropDef[];             // 0–12 non-colliding scenery pieces (houses, trees, signs), placed per room
   rooms: Room[];                 // exactly 3; the last is the boss room
   dialogue: {
     roomIntro: DialogueLine[][]; // one list per room, max 3 lines each
@@ -187,6 +189,10 @@ type BossDef = EnemyDef & {
 };
 
 type DialogueLine = { speaker: string; text: string };   // text ≤ 120 chars
+
+type NpcDef = { id: string; name: string; rig: Rig; lines: DialogueLine[] };   // 1–3 lines, shown in a speech box when the player is within ~2 tiles
+type PropDef = { id: string; name: string; size: { w: number; h: number }; shapes: Shape[]; layer: "back" | "front" };
+// size and shapes in rig pixels (drawn at RIG_SCALE = 0.5), up to 384×384
 ```
 
 ### 4.5 Rooms (tile grid)
@@ -202,7 +208,9 @@ type Room = {
   layout: string[];              // 14 strings of equal width
   isBossRoom: boolean;
   exit: { toRoom: string | "END" };   // where the exit tile "E" leads
+  props?: { prop: string; col: number; row: number }[];   // prop's bottom-left sits on top of tile (col, row+1)
 };
+// The engine shows `name` as a banner at the top of the screen for ~2.5 s every time the room starts.
 ```
 
 | Char | Meaning | Solid? |
@@ -215,7 +223,8 @@ type Room = {
 | `S` | player spawn (exactly one per room) | no |
 | `E` | exit (exactly one per non-boss room) | no |
 | `C` | checkpoint (optional) | no |
-| `1`–`3` | enemy spawn: `1` = `enemies[0]` | no |
+| `1`–`5` | enemy spawn: `1` = `enemies[0]` | no |
+| `a`–`c` | NPC spawn: `a` = `npcs[0]` | no |
 | `B` | boss spawn (boss room only, exactly one) | no |
 
 **Progression rules (no softlocks):** a non-boss room is finished by touching `E`; enemies never have to be killed. The boss room is finished when the boss's HP reaches 0, which ends the cartridge. Defeated enemies stay defeated until the room restarts. Death restarts the current room from `S` (or the last `C`) with full HP.
@@ -306,7 +315,8 @@ Flavour dialogue only. Objectives, rooms, enemies and stats are never changed.
 ```ts
 type Rig = {
   sizeClass: "tiny" | "small" | "human" | "tall" | "large" | "huge";
-  // canvas size in px: tiny 12×16, small 16×20, human 16×32, tall 16×40, large 48×48, huge 96×96
+  // canvas size in RIG pixels (2x detail): tiny 24×32, small 32×40, human 32×64, tall 32×80, large 96×96, huge 192×192
+  // drawn at RIG_SCALE = 0.5, so in the world a human is still 16×32 px (2 tiles tall), just twice as detailed
   parts: {
     head: Shape[]; torso: Shape[];
     armFront: Shape[]; armBack: Shape[];
@@ -416,7 +426,10 @@ The library is shared by everyone using the app and persists in Snowflake across
 
 ## 9. Engine (Lane A)
 
-- **Phaser 3, Arcade physics.** Fixed logical resolution **400×224** (25×14 tiles), integer-scaled to the window, `pixelArt: true`, no smoothing. Movement is time-based (delta-time), so speed doesn't change with frame rate.
+- **Phaser 3, Arcade physics.** World units stay 16 px tiles, rooms 14 rows. **Render at 2x:** canvas 800×448 with the camera zoomed so each world px is 2 screen px, then an extra camera zoom of ~1.5 (view ≈ 17×9.5 tiles, following the player, vertical scroll allowed), integer-scaled to the window, `pixelArt: true`, no smoothing. Rig and prop textures are generated at their full rig-pixel size and displayed at `RIG_SCALE` so their 2x detail shows. Tiles get simple procedural detail (grass tufts, edge highlights, brick lines) from the world palette.
+- **Room banner:** on every room start, the room `name` slides in at the top centre in the pixel font for ~2.5 s.
+- **NPCs:** spawned at `a`–`c`, idle-animated, non-colliding, not attackable. When the player is within ~2 tiles, their `lines` play in the dialogue box (once per room visit).
+- **Props:** drawn from `world.props` at each room's `props` placements, behind (`back`) or in front of (`front`) the player, never colliding. Movement is time-based (delta-time), so speed doesn't change with frame rate.
 - **Player:** spawns at `S`, WASD + Space, mouse aim, left click uses the selected slot, 1–4 select slots, cooldown shown on each slot.
 - **Combat:** every hit goes through `resolveHit(attacker, ability, target)` in `src/shared/combat.ts` (hax check, then formula). Floating damage numbers or `IMMUNE`. Knockback, 0.5 s invulnerability after a hit.
 - **Enemies:** behaviours `walker` (patrols, turns at edges and walls), `jumper` (hops toward the player), `flyer` (sine-wave flight toward the player), `shooter` (stands and fires projectiles). They have real HP and attacks and die at 0 HP.
