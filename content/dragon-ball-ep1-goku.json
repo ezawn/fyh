@@ -656,7 +656,8 @@
         "knockback": 600,
         "animation": "beam"
       }
-    ]
+    ],
+    "powerTier": "planet"
   },
   "world": {
     "id": "dragon-ball-ep1",
@@ -1040,7 +1041,8 @@
           ],
           "range": 18,
           "cooldown": 1
-        }
+        },
+        "powerTier": "civilian"
       },
       {
         "id": "pterodactyl",
@@ -1311,7 +1313,8 @@
           ],
           "range": 16,
           "cooldown": 1.2
-        }
+        },
+        "powerTier": "civilian"
       },
       {
         "id": "sabre-tooth-tiger",
@@ -1727,7 +1730,8 @@
           ],
           "range": 20,
           "cooldown": 1.1
-        }
+        },
+        "powerTier": "peak-human"
       },
       {
         "id": "oolong",
@@ -2219,7 +2223,8 @@
           ],
           "range": 16,
           "cooldown": 1.2
-        }
+        },
+        "powerTier": "civilian"
       }
     ],
     "boss": {
@@ -2729,7 +2734,8 @@
         "charge",
         "jump"
       ],
-      "phaseAt": 0.4
+      "phaseAt": 0.4,
+      "powerTier": "street"
     },
     "npcs": [
       {

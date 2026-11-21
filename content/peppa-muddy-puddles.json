@@ -477,7 +477,8 @@
         "knockback": 600,
         "animation": "cast"
       }
-    ]
+    ],
+    "powerTier": "toddler"
   },
   "world": {
     "id": "peppa-muddy-puddles",
@@ -951,7 +952,8 @@
           ],
           "range": 12,
           "cooldown": 1
-        }
+        },
+        "powerTier": "toddler"
       },
       {
         "id": "suzy-sheep",
@@ -1359,7 +1361,8 @@
           ],
           "range": 12,
           "cooldown": 1
-        }
+        },
+        "powerTier": "toddler"
       },
       {
         "id": "danny-dog",
@@ -1693,7 +1696,8 @@
           ],
           "range": 12,
           "cooldown": 0.9
-        }
+        },
+        "powerTier": "toddler"
       },
       {
         "id": "rebecca-rabbit",
@@ -2062,7 +2066,8 @@
           ],
           "range": 12,
           "cooldown": 1
-        }
+        },
+        "powerTier": "toddler"
       }
     ],
     "boss": {
@@ -2554,7 +2559,8 @@
         "jump",
         "charge"
       ],
-      "phaseAt": 0.5
+      "phaseAt": 0.5,
+      "powerTier": "civilian"
     },
     "npcs": [
       {

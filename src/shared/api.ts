@@ -15,7 +15,7 @@ export type ApiError = { error: { code: string; message: string } };
 // ---------- Library ----------
 export type CharacterSummary = Pick<
   CharacterDef,
-  "id" | "name" | "source" | "rig" | "stats" | "tags" | "abilities" | "assumptions"
+  "id" | "name" | "source" | "rig" | "stats" | "tags" | "abilities" | "assumptions" | "powerTier"
 > & { cartridgeId: string };
 
 export type WorldSummary = Pick<WorldDef, "id" | "name" | "source" | "visualStyle"> & {
@@ -25,8 +25,8 @@ export type WorldSummary = Pick<WorldDef, "id" | "name" | "source" | "visualStyl
 };
 
 export function toCharacterSummary(c: Cartridge): CharacterSummary {
-  const { id, name, source, rig, stats, tags, abilities, assumptions } = c.character;
-  return { id, name, source, rig, stats, tags, abilities, assumptions, cartridgeId: c.id };
+  const { id, name, source, rig, stats, tags, abilities, assumptions, powerTier } = c.character;
+  return { id, name, source, rig, stats, tags, abilities, assumptions, powerTier, cartridgeId: c.id };
 }
 
 export function toWorldSummary(c: Cartridge): WorldSummary {
