@@ -33,7 +33,7 @@ app.replaceChildren(
   h(
     "header",
     { class: "top" },
-    h("button", { class: "brand", onclick: () => navigate("title") }, "RETRO REMIX"),
+    h("button", { class: "brand", onclick: () => navigate("title") }, "HAX"),
     h("nav", null, navButtons),
   ),
   banner,
