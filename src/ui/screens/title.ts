@@ -13,7 +13,7 @@ export function titleScreen(root: HTMLElement) {
     const hero = h(
       "section",
       { class: "hero" },
-      h("h1", { class: "logo" }, "AI RETRO REMIX"),
+      h("h1", { class: "logo" }, "HAX"),
       h("p", { class: "muted" }, "Any character. Any world. Canon strength, no rebalancing."),
       h(
         "div",

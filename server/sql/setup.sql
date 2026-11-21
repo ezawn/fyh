@@ -1,4 +1,4 @@
--- Snowflake setup for AI Retro Remix (SPEC 8.4).
+-- Snowflake setup for Hax (SPEC 8.4).
 -- Run once in Snowsight (Projects > Worksheets) as ACCOUNTADMIN. Safe to re-run.
 -- Replace <PUBLIC_KEY> with the body of the server's public key (no BEGIN/END lines).
 
