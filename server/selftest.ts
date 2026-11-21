@@ -253,4 +253,74 @@ await test("session: unknown ids -> 404", async () => {
   );
 });
 
+// ---------- stepwise generation (Gemini path) ----------
+/** A fake AI that answers each step from the fixture; `broken` lists step names whose FIRST answer is bad. */
+function stepFake(broken: string[] = []) {
+  const b = body() as Record<string, any>;
+  const { rig: charRig, abilities, ...charCore } = b.character;
+  const strip = ({ rig: _r, ...rest }: Record<string, any>) => rest;
+  const seen = new Map<string, number>();
+  const log: string[] = [];
+  const fn = (async (prompt: string) => {
+    const step = prompt.match(/this is the "([^"]+)" step/)?.[1] ?? "?";
+    log.push(step);
+    const n = seen.get(step) ?? 0;
+    seen.set(step, n + 1);
+    const bad = n === 0 && broken.includes(step);
+    if (step === "overview") return { outcome: "cartridge", source: b.source, notes: b.notes, character: charCore };
+    if (step === "world") {
+      const { enemies, boss, rooms: _rooms, ...world } = b.world;
+      return { world, enemies: enemies.map(strip), boss: strip(boss) };
+    }
+    if (step === "abilities") return { abilities };
+    if (step.startsWith("rig for")) return { rig: bad ? { ...charRig, parts: { ...charRig.parts, head: [{ type: "circle", x: 0, y: 0, r: 50, color: "#ffffff" }] } } : charRig };
+    if (step === "rooms") return { rooms: b.world.rooms };
+    throw new Error(`unexpected step ${step}`);
+  }) as unknown as CompleteFn;
+  return { fn, log };
+}
+
+await test("stepwise: steps stitched into a valid, saved cartridge", async () => {
+  const store = new MemoryStore([]);
+  const ai = stepFake();
+  const events: GenerateEvent[] = [];
+  const result = await runGenerate({ title: "Nosferatu (1922)", character: "Count Orlok" }, { store, complete: ai.fn, emit: (e) => events.push(e), stepwise: true });
+  assert.equal(result.status, "ready", JSON.stringify(result).slice(0, 400));
+  assert.deepEqual(ai.log, ["overview", "world", "abilities", "rig for Count Orlok", "rig for Plague Rat", "rig for Vampire Hunter", "rooms"]);
+  const details = events.flatMap((e) => (e.type === "stage" && e.stage === "interpreting" && e.detail ? [e.detail] : []));
+  assert.ok(details.some((d) => d.startsWith("Step 4: rig for")), "each step is streamed as a real stage");
+  assert.equal((await store.listReady()).length, 1);
+});
+
+await test("stepwise: repair re-runs only the broken step", async () => {
+  const ai = stepFake(["rig for Count Orlok"]);
+  const { result, stages } = await (async () => {
+    const events: GenerateEvent[] = [];
+    const r = await runGenerate({ title: "Nosferatu (1922)", character: "Count Orlok" }, { store: new MemoryStore([]), complete: ai.fn, emit: (e) => events.push(e), stepwise: true });
+    return { result: r, stages: events.filter((e) => e.type === "stage").map((e) => (e as { stage: string }).stage) };
+  })();
+  assert.equal(result.status, "ready", JSON.stringify(result).slice(0, 400));
+  assert.ok(stages.includes("repairing"));
+  assert.deepEqual(ai.log.slice(7), ["rig for Count Orlok"], "only the character rig step ran again");
+});
+
+await test("stepwise: honest outcome from step 1 stops early", async () => {
+  const ai = fake({ outcome: "unknown_source", message: "I don't know this film." });
+  const events: GenerateEvent[] = [];
+  const result = await runGenerate({ title: "Some Lost Film", character: "Nobody" }, { store: new MemoryStore([]), complete: ai, emit: (e) => events.push(e), stepwise: true });
+  assert.equal(result.status, "unknown_source");
+  assert.equal(ai.calls, 1);
+});
+
+await test("stepwise: problems map to their steps", async () => {
+  const { stepFor } = await import("./steps");
+  assert.equal(stepFor("character.rig.parts.head: shape goes outside"), "rig:character");
+  assert.equal(stepFor("world.enemies.1.rig.pivots.neck: outside the canvas"), "rig:enemy-1");
+  assert.equal(stepFor("world.boss.rig.parts.torso: Invalid input"), "rig:boss");
+  assert.equal(stepFor("character.abilities.2: flight needs duration > 0"), "abilities");
+  assert.equal(stepFor("world.rooms.0: needs exactly one spawn"), "rooms");
+  assert.equal(stepFor("world.enemies.0 (Plague Rat): missing powerTier"), "world");
+  assert.equal(stepFor("character: missing powerTier"), "overview");
+});
+
 console.log(`\n${passed} tests passed`);

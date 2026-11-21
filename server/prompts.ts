@@ -43,7 +43,7 @@ const rigSizes = Object.entries(RIG_SIZES)
   .map(([k, v]) => `${k} ${v.w}x${v.h}`)
   .join(", ");
 
-const SCHEMA_RULES = `
+export const SCHEMA_RULES = `
 ## Schema rules (the engine only understands these; anything else is ignored or rejected)
 
 ### Character (the ONE playable protagonist)
@@ -116,7 +116,7 @@ HP (1-${MAX_STAT}), AD, AP, ARM, MR, ARM_PEN, MAGIC_PEN (all >= 0, uncapped up t
 - notes.designChoices: things you invented for the game (e.g. "the boss is a design choice").
 `;
 
-const HONESTY_RULES = `
+export const HONESTY_RULES = `
 ## Honesty rules (most important)
 - If the title is ambiguous (several films/series/episodes fit and the choice matters), return outcome "needs_clarification" with a short "question", e.g. "Which adaptation do you mean: Nosferatu (1922) or another Dracula film?". Do not include a cartridge.
 - If you don't know the source, return outcome "unknown_source" with a "message" saying so. Never invent episode details, plot points or characters you aren't sure about.
@@ -125,7 +125,7 @@ const HONESTY_RULES = `
 - Use the iconic version of the character (their best-known powers and look), and record that in the character's assumptions. The world (rooms, enemies, boss) follows the requested film/episode.
 `;
 
-const SCALE_RULES = `
+export const SCALE_RULES = `
 ## Reference scale (anchors shared by every cartridge in the library)
 Place the character AND every enemy and the boss on this scale, so separately generated cartridges are comparable.
 ${REFERENCE_SCALE}

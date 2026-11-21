@@ -51,7 +51,7 @@ export function shallowSchema(schema: unknown, depth: number): unknown {
 type GeminiResponse = {
   candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] }; finishReason?: string }[];
   promptFeedback?: { blockReason?: string };
-  error?: { code?: number; message?: string; status?: string };
+  error?: { code?: number; message?: string; status?: string; details?: { retryDelay?: string }[] };
 };
 
 /** One Gemini generateContent call constrained by a JSON schema; returns the parsed object. */
@@ -108,12 +108,16 @@ export async function geminiComplete<T = unknown>(prompt: string, jsonSchema: un
     return { res, body };
   };
 
-  // Free-tier models are often busy (503) or rate-limited (429): retry those twice with a short backoff.
+  // Free-tier models are often busy (503) or rate-limited (429): retry up to 3 times, waiting as long
+  // as Gemini asks (RetryInfo.retryDelay) when that's under a minute; longer means the daily quota is gone.
   const busyRetry: typeof call = async (field, s, text) => {
     let r = await call(field, s, text);
-    for (const waitMs of [3000, 8000]) {
+    for (const fallbackMs of [3000, 8000, 15000]) {
       if (r.res.status !== 503 && r.res.status !== 429) break;
-      await new Promise((resolve) => setTimeout(resolve, waitMs));
+      const asked = r.body.error?.details?.find((d) => d.retryDelay)?.retryDelay;
+      const askedMs = asked ? parseFloat(asked) * 1000 : NaN;
+      if (askedMs > 60_000) break;
+      await new Promise((resolve) => setTimeout(resolve, Number.isFinite(askedMs) ? askedMs + 500 : fallbackMs));
       r = await call(field, s, text);
     }
     return r;
