@@ -219,6 +219,19 @@ header.top nav {
   font-size: 12px;
   padding: 14px 18px;
 }
+.btn.danger {
+  background: #a83246;
+  color: #fff;
+}
+.btn.danger:hover {
+  background: #c43c54;
+}
+.delete-wrap {
+  margin-top: 10px;
+}
+.delete-wrap .tiny {
+  color: #ff8080;
+}
 .btn.small-btn {
   font-size: 8px;
   padding: 5px 8px;

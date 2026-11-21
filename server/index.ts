@@ -3,6 +3,8 @@
  * Storage: the shared Snowflake library, or STORE=memory for offline dev (server/store.ts).
  */
 import "dotenv/config";
+import { readdir } from "node:fs/promises";
+import path from "node:path";
 import express from "express";
 import type { ZodError } from "zod";
 import { toCharacterSummary, toWorldSummary, type ApiError, type GenerateEvent } from "../src/shared/api";
@@ -41,6 +43,22 @@ app.get(
     const cart = await store.get(id);
     if (!cart || cart.status !== "ready") return sendError(res, 404, "NOT_FOUND", `No cartridge "${id}"`);
     res.json(cart);
+  }),
+);
+
+// Demo cartridges (content/*.json) can't be deleted, so the showcase always works.
+const DEMO_IDS = new Set(
+  (await readdir(path.resolve("content")).catch(() => [] as string[])).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)),
+);
+
+app.delete(
+  "/api/cartridges/:id",
+  route(async (req, res) => {
+    const id = String(req.params.id);
+    if (DEMO_IDS.has(id)) return sendError(res, 403, "PROTECTED", `"${id}" is a demo cartridge and can't be deleted`);
+    if (!(await store.delete(id))) return sendError(res, 404, "NOT_FOUND", `No cartridge "${id}"`);
+    console.log(`[library] deleted ${id}`);
+    res.status(204).end();
   }),
 );
 

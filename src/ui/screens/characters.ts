@@ -6,7 +6,8 @@ import { ATTACK_TAG_INFO, STAT_KEYS, SLOT_ROLE, formatNumber, haxInfo } from "..
 import { isMechanicSupported } from "../mechanics";
 import { rigPreview } from "../rig";
 import { navigate } from "../router";
-import { state } from "../state";
+import { deleteCartridge } from "../api";
+import { ensureLibrary, findWorld, state } from "../state";
 import { gridStep, onKey, screenHeader, withLibrary } from "./common";
 
 function abilityRow(a: Ability): HTMLElement {
@@ -38,7 +39,42 @@ function abilityRow(a: Ability): HTMLElement {
   );
 }
 
-function detail(c: CharacterSummary, onNext: () => void): HTMLElement {
+/** Two clicks to delete: the first arms it, the second deletes the whole cartridge (character + world). */
+function deleteButton(c: CharacterSummary): HTMLElement {
+  const msg = h("p", { class: "tiny" });
+  let armed = false;
+  const btn: HTMLButtonElement = h("button", { class: "btn small-btn danger" }, "🗑 Delete cartridge");
+  btn.onclick = async () => {
+    if (!armed) {
+      armed = true;
+      btn.textContent = `Click again to delete ${c.name} and their world`;
+      setTimeout(() => {
+        if (armed && btn.isConnected) {
+          armed = false;
+          btn.textContent = "🗑 Delete cartridge";
+        }
+      }, 4000);
+      return;
+    }
+    armed = false;
+    btn.disabled = true;
+    btn.textContent = "Deleting…";
+    try {
+      await deleteCartridge(c.cartridgeId ?? c.id);
+      if (state.selectedCharacterId === c.id) state.selectedCharacterId = null;
+      if (state.selectedWorldId && findWorld(state.selectedWorldId)?.cartridgeId === c.cartridgeId) state.selectedWorldId = null;
+      await ensureLibrary(true);
+      navigate("characters");
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = "🗑 Delete cartridge";
+      msg.textContent = (err as Error)?.message ?? String(err);
+    }
+  };
+  return h("div", { class: "delete-wrap" }, btn, msg);
+}
+
+function detail(c: CharacterSummary, onNext: () => void, offline: boolean): HTMLElement {
   const stats = c.stats ?? ({} as CharacterSummary["stats"]);
   const tags = Array.isArray(c.tags) ? c.tags : [];
   const abilities = (Array.isArray(c.abilities) ? [...c.abilities] : []).sort((a, b) => a.slot - b.slot);
@@ -59,6 +95,7 @@ function detail(c: CharacterSummary, onNext: () => void): HTMLElement {
         h("p", { class: "muted small" }, c.source),
         h("p", { class: "placeholder tiny" }, "Rig preview: placeholder renderer (engine renderer not wired in yet)"),
         h("button", { class: "btn primary", onclick: onNext }, "Next: World select ▶"),
+        offline ? null : deleteButton(c),
       ),
     ),
     h(
@@ -109,7 +146,7 @@ export function charactersScreen(root: HTMLElement) {
         c.classList.toggle("selected", j === i);
         c.setAttribute("aria-pressed", String(j === i));
       });
-      side.replaceChildren(detail(chars[i], next));
+      side.replaceChildren(detail(chars[i], next, lib.offline));
       if (focus) cards[i].focus();
     };
 
