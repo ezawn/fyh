@@ -39,7 +39,7 @@ const layout = (goal: "E" | "B") => [
 function body(): Record<string, any> {
   const enemy = {
     id: "rat", name: "Plague Rat", rig: { ...rig, sizeClass: "tiny" as const, parts: { ...rig.parts, head: [{ type: "circle" as const, x: 6, y: 4, r: 3, color: "#555555" }], torso: [], armFront: [], armBack: [], legFront: [], legBack: [] }, pivots: { neck: [6, 7], shoulder: [6, 8], hip: [6, 12] } },
-    collisionBox: { w: 10, h: 8 }, stats: stats(5, 1), tags: [], behaviour: "walker", speed: 60,
+    collisionBox: { w: 10, h: 8 }, stats: stats(5, 1), powerTier: "toddler", tags: [], behaviour: "walker", speed: 60,
     attack: { damageType: "physical", ratio: 1, attackTags: ["PHYSICAL"], range: 16, cooldown: 1 },
   };
   return {
@@ -47,7 +47,7 @@ function body(): Record<string, any> {
     character: {
       id: "count-orlok", name: "Count Orlok", source: "Nosferatu (1922)", versionOrEpisode: "Iconic (1922 film)",
       assumptions: ["City-level: supernatural vampire"], rig, collisionBox: { w: 12, h: 30 },
-      movement: { speed: 140, jumpStrength: 420, canFly: false }, stats: stats(3000, 300, 600), tags: [],
+      movement: { speed: 140, jumpStrength: 420, canFly: false }, stats: stats(3000, 300, 600), powerTier: "city", tags: [],
       abilities: [
         { id: "claw", name: "Claw", slot: 1, mechanic: "melee", damageType: "physical", attackTags: ["PHYSICAL"], ratio: 1, range: 24, cooldown: 0.5, duration: 0, knockback: 100, animation: "swing" },
         { id: "shadow", name: "Shadow Grasp", slot: 2, mechanic: "projectile", damageType: "magic", attackTags: ["ENERGY"], ratio: 1.5, range: 300, cooldown: 2, duration: 0, projectileSpeed: 300, knockback: 50, animation: "cast" },
@@ -59,7 +59,7 @@ function body(): Record<string, any> {
       id: "nosferatu-wisborg", name: "Wisborg", source: "Nosferatu (1922)",
       visualStyle: { palette: { sky: "#30304a", skyBottom: "#50506a", ground: "#3a3020", groundTop: "#5a5040", platform: "#6a6050", accent: "#c0a040" }, backdrop: "city" },
       enemies: [enemy],
-      boss: { ...enemy, id: "hunter", name: "Vampire Hunter", rig, collisionBox: { w: 12, h: 30 }, stats: stats(50, 8), pattern: ["charge"], phaseAt: 0.5 },
+      boss: { ...enemy, id: "hunter", name: "Vampire Hunter", rig, collisionBox: { w: 12, h: 30 }, stats: stats(50, 8), powerTier: "civilian", pattern: ["charge"], phaseAt: 0.5 },
       rooms: [
         { id: "room-1", name: "Harbour", objective: "Reach the town", layout: layout("E"), isBossRoom: false, exit: { toRoom: "room-2" } },
         { id: "room-2", name: "Streets", objective: "Reach the house", layout: layout("E"), isBossRoom: false, exit: { toRoom: "room-3" } },
@@ -80,7 +80,7 @@ const fullCart = (id: string): Cartridge =>
 
 function otherFixture(): Cartridge {
   const c = fullCart("nosferatu-1922-hutter");
-  c.character = { ...c.character, id: "hutter", name: "Hutter", stats: { HP: 50, AD: 8, AP: 0, ARM: 5, MR: 0, ARM_PEN: 0, MAGIC_PEN: 0 } };
+  c.character = { ...c.character, id: "hutter", name: "Hutter", powerTier: "civilian", stats: { HP: 50, AD: 8, AP: 0, ARM: 5, MR: 0, ARM_PEN: 0, MAGIC_PEN: 0 } };
   c.world = { ...c.world, id: "transylvania" };
   return c;
 }

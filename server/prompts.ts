@@ -13,6 +13,7 @@ import {
   ROOM_MIN_COLS,
   ROOM_ROWS,
   ROOMS_PER_WORLD,
+  TIER_BANDS,
   TILE,
   type CharacterDef,
   type WorldDef,
@@ -32,6 +33,11 @@ export const REFERENCE_SCALE = `| Tier | Example | HP | AD | AP | ARM | MR |
 | City-level | a strong sorcerer | 3,000 | 300 | 600 | 200 | 300 |
 | Planet-level | Goku (iconic) | 10,000 | 1,000 | 1,000 | 800 | 800 |
 | Cosmic | multiverse-level beings | 100,000+ | 10,000+ | 10,000+ | 5,000+ | 5,000+ |`;
+
+/** The powerTier values and the stat band each one allows (validateCartridge enforces these). */
+export const TIER_RULES = Object.entries(TIER_BANDS)
+  .map(([tier, b]) => `- "${tier}": HP ${b.hp[0]}–${b.hp[1]}, main attack max(AD, AP) ${b.atk[0]}–${b.atk[1]} (e.g. ${b.example})`)
+  .join("\n");
 
 const rigSizes = Object.entries(RIG_SIZES)
   .map(([k, v]) => `${k} ${v.w}x${v.h}`)
@@ -124,6 +130,8 @@ const SCALE_RULES = `
 Place the character AND every enemy and the boss on this scale, so separately generated cartridges are comparable.
 ${REFERENCE_SCALE}
 Interpolate between tiers. Keep canonical strength: never weaken or boost anyone to make the fight fair.
+Every character, enemy and boss MUST have a "powerTier" field. Pick the tier that matches the source material, then keep its stats inside that tier's band:
+${TIER_RULES}
 In the character's assumptions, state its tier and why (e.g. "Peak human: a skilled fighter with no superpowers").
 Explain the enemy and boss placements in notes.designChoices.
 `;
